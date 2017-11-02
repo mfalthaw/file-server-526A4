@@ -13,31 +13,34 @@ HOST = '127.0.0.1'
 PORT = 8000
 
 def retrieve(name, sock):
-	fileName = sock.recv(BUFFER_SIZE)
-	fileName = fileName.decode()
+	while True:
+		fileName = sock.recv(BUFFER_SIZE)
+		fileName = fileName.decode()
 
-	print('File Name recieved: {}'.format(fileName))
-	if os.path.isfile(fileName):
-		print('Found File')
-		fileSize = os.path.getsize(fileName)
-		sock.send(('Success! File Size: ' + str(fileSize)).encode('utf-8'))
-		
-		userResponse = sock.recv(BUFFER_SIZE)
-		userResponse = userResponse.decode()
-		
-		if userResponse.lower().startswith('ok'):
-			# start sending file
-			with open(fileName, 'rb') as file:
-				bytesToSend = file.read(BUFFER_SIZE)
-				sock.send(bytesToSend)
-				
-				while bytesToSend != '':
+		print('File Name received: {}'.format(fileName))
+		if os.path.isfile(fileName):
+			print('Found File')
+			fileSize = os.path.getsize(fileName)
+			sock.send(('Success! File Size: ' + str(fileSize)).encode('utf-8'))
+			
+			userResponse = sock.recv(BUFFER_SIZE)
+			userResponse = userResponse.decode()
+			
+			if userResponse.lower().startswith('ok'):
+				# start sending file
+				with open(fileName, 'rb') as file:
 					bytesToSend = file.read(BUFFER_SIZE)
 					sock.send(bytesToSend)
+					
+					while bytesToSend != '':
+						bytesToSend = file.read(BUFFER_SIZE)
+						sock.send(bytesToSend)
+						bytesToSend = bytesToSend.decode()
+					print('file transfer completed!')
+			else:
+				print('userResponse was: {}'.format(userResponse))
 		else:
-			print('userResponse was: {}'.format(userResponse))
-	else:
-		sock.send(("Fail! Can't find: {}".format(fileName)).encode('utf-8'))
+			sock.send(("Fail! Can't find: {}".format(fileName)).encode('utf-8'))
 
 	# close connection
 	sock.close()

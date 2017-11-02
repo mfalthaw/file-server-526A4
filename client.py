@@ -29,6 +29,7 @@ def download(s):
 	fileName = input("Filename?\n> ")
 	if fileName != 'q':
 		s.send(fileName.encode('utf-8'))
+		print('sent fileName: {}'.format(fileName))
 		
 		data = s.recv(BUFFER_SIZE)
 		data = data.decode()
