@@ -5,6 +5,7 @@
 import string
 import socket
 import threading
+from datetime import datetime
 import os
 
 # globals
@@ -12,7 +13,16 @@ BUFFER_SIZE = 4096
 HOST = '127.0.0.1'
 PORT = 8000
 
-def retrieve(name, sock):
+'''
+Handles receiving files from client
+'''
+def receiveFile(name, sock):
+	print("receivingFile")
+
+'''
+Handles sending files to client
+'''
+def sendFile(name, sock):
 	while True:
 		fileName = sock.recv(BUFFER_SIZE)
 		fileName = fileName.decode()
@@ -51,12 +61,12 @@ def Main():
 	s = socket.socket()
 	s.bind((HOST, PORT))
 	s.listen(5)
-	print('Server started...\nListening on {}:{}'.format(str(HOST), str(PORT)))
+	print('Server started! Listening on {}:{}...'.format(str(HOST), str(PORT)))
 
 	while True:
 		conn, addr = s.accept()
-		print('Client connected...\nAddress: {}'.format(str(addr)))
-		thread = threading.Thread(target=retrieve, args=("retrieveThread", conn))
+		print('{}: New connection from: {}'.format(datetime.now().strftime('%H:%M:%S'), str(addr)))
+		thread = threading.Thread(target=sendFile, args=("sendFileThread", conn))
 		thread.start()
 
 	# close connection
