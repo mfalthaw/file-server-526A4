@@ -26,6 +26,12 @@ def sendData(sock, data):
 	sock.send(data)
 
 '''
+Handles receiving messages from client
+'''
+def recvMsg(sock):
+	return sock.recv(BUFFER_SIZE).decode()
+
+'''
 Handles receiving data from client
 '''
 def recvData(sock):
@@ -35,8 +41,15 @@ def recvData(sock):
 Handle new client
 '''
 def handleClient(name, sock):
-	# sock.
-	print("handleClient")
+	while True:
+		print('handleClient')
+		task = recvMsg(sock)
+		if task.lower() == 'upload':
+			receiveFile(sock)
+		elif task.lower() == 'download':
+			sendFile(sock)
+		else:
+			sendMsg(sock, "Supported tasks: upload or download")
 
 '''
 Handles receiving files from client
@@ -47,10 +60,10 @@ def receiveFile(name, sock):
 '''
 Handles sending files to client
 '''
-def sendFile(name, sock):
+def sendFile(sock):
+	print('sendFile')
 	while True:
 		fileName = recvData(sock)
-		fileName = fileName.decode()
 
 		print('File Name received: {}'.format(fileName))
 		if os.path.isfile(fileName):
@@ -59,7 +72,6 @@ def sendFile(name, sock):
 			sendMsg(sock, 'Success! File Size: ' + str(fileSize))
 			
 			userResponse = recvData(sock)
-			userResponse = userResponse.decode()
 			
 			if userResponse.lower().startswith('ok'):
 				# start sending file
@@ -92,7 +104,8 @@ def Main():
 	while True:
 		conn, addr = s.accept()
 		print('{}: New connection from: {}'.format(datetime.now().strftime('%H:%M:%S'), str(addr)))
-		thread = threading.Thread(target=sendFile, args=("sendFileThread", conn))
+		# thread = threading.Thread(target=sendFile, args=("sendFileThread", conn))
+		thread = threading.Thread(target=handleClient, args=("handleClientThread", conn))
 		thread.start()
 
 	# close connection

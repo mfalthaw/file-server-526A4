@@ -12,7 +12,7 @@ PORT = 8000
 '''
 Handles sending messages to server
 '''
-def send(sock, str):
+def sendMsg(sock, str):
 	sock.send(str.encode('utf-8'))
 
 '''
@@ -34,7 +34,7 @@ Handles downloading files from server
 def download(s):
 	fileName = input("Filename?\n> ")
 	if fileName != 'q':
-		send(s, fileName)
+		sendMsg(s, fileName)
 		print('sent fileName: {}'.format(fileName))
 		
 		data = s.recv(BUFFER_SIZE)
@@ -44,7 +44,7 @@ def download(s):
 			fileSize = int(data[20:])
 			msg = input("File Found! " + str(fileSize) + " Bytes. Download? (Y/N)\n> ")
 			if msg.lower().startswith('y'):
-				send(s, 'OK')
+				sendMsg(s, 'OK')
 				file = open('DOWNLOADED_' + fileName, 'wb')
 				
 				data = s.recv(BUFFER_SIZE)
@@ -71,10 +71,11 @@ def Main():
 	
 	while True:
 		task = promptForTask()
-		if task.lower().startswith('u'):
+		if task == 'upload':
+			sendMsg(s, 'upload')
 			upload(s)
-		elif task.lower().startswith('d'):
-			print('Hey! you want to download')
+		elif task == 'download':
+			sendMsg(s, 'download')
 			download(s)
 
 	# close socket
