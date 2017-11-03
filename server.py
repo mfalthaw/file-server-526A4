@@ -71,9 +71,9 @@ def sendFile(sock):
 			fileSize = os.path.getsize(fileName)
 			sendMsg(sock, 'Success! File Size: ' + str(fileSize))
 			
-			userResponse = recvData(sock)
+			userResponse = recvMsg(sock)
 			
-			if userResponse.lower().startswith('ok'):
+			if userResponse.lower() == 'ok':
 				# start sending file
 				with open(fileName, 'rb') as file:
 					bytesToSend = file.read(BUFFER_SIZE)
@@ -87,7 +87,6 @@ def sendFile(sock):
 			else:
 				print('userResponse was: {}'.format(userResponse))
 		else:
-			# sock.send(("Fail! Can't find: {}".format(fileName)).encode('utf-8'))
 			send(sock, "Fail! Can't find: {}".format(fileName))
 
 	# close connection
@@ -104,7 +103,6 @@ def Main():
 	while True:
 		conn, addr = s.accept()
 		print('{}: New connection from: {}'.format(datetime.now().strftime('%H:%M:%S'), str(addr)))
-		# thread = threading.Thread(target=sendFile, args=("sendFileThread", conn))
 		thread = threading.Thread(target=handleClient, args=("handleClientThread", conn))
 		thread.start()
 
