@@ -10,6 +10,12 @@ HOST = '127.0.0.1'
 PORT = 8000
 
 '''
+Handles sending messages to server
+'''
+def send(sock, str):
+	sock.send(str.encode('utf-8'))
+
+'''
 Prompt the user for download or upload
 '''
 def promptForTask():
@@ -28,7 +34,7 @@ Handles downloading files from server
 def download(s):
 	fileName = input("Filename?\n> ")
 	if fileName != 'q':
-		s.send(fileName.encode('utf-8'))
+		send(s, fileName)
 		print('sent fileName: {}'.format(fileName))
 		
 		data = s.recv(BUFFER_SIZE)
@@ -38,7 +44,7 @@ def download(s):
 			fileSize = int(data[20:])
 			msg = input("File Found! " + str(fileSize) + " Bytes. Download? (Y/N)\n> ")
 			if msg.lower().startswith('y'):
-				s.send('OK'.encode('utf-8'))
+				send(s, 'OK')
 				file = open('DOWNLOADED_' + fileName, 'wb')
 				
 				data = s.recv(BUFFER_SIZE)
