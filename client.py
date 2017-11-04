@@ -10,40 +10,6 @@ BUFFER_SIZE = 1024
 HOST = '127.0.0.1'
 PORT = 8000
 
-
-'''
-Handles parsing arguments
-Reference: https://docs.python.org/3/library/argparse.h
-'''
-def parseArguments():
-	usage = 'python3 client.py command filename hostname:port cipher key'
-	parser = argparse.ArgumentParser(usage=usage)
-
-	# arugments to be parsed
-	parser.add_argument('command', type=str, help='The command argument will \
-	determine if the client will be uploading or downloading data to/from the server. \
-	Valid values are write and read.')
-
-	parser.add_argument('filename', type=str, help='The filename argument specifies \
-	the name of the file to be used by the server application')
-
-	parser.add_argument('hostname:port', type=str, help='The hostname:port argument \
-	specifies the address of the server, and the port on which the server is listening. \
-	The hostname can be specified as a domain name or an IPv4 address. \
-	he port will be an integer in range 0-65535.')
-
-	parser.add_argument('cipher', type=str, help='The cipher argument specifies which \
-	cipher is to be used for encrypting the communication with the server. Valid values \
-	are aes256, aes128 and null.')
-
-	parser.add_argument('key', type=str, help='The key parameter specifies a secret key \
-	that must match the server’s secret key. This key will be also used to derive both \
-	the session keys and the initialization vectors.')
-
-	# parse and return arguments to main
-	args = parser.parse_args()
-	return args
-
 '''
 Handles sending messages to server
 '''
@@ -114,11 +80,56 @@ def download(sock):
 		print("File doesn't exist!")
 
 '''
+Handles parsing arguments
+Reference: https://docs.python.org/3/library/argparse.h
+'''
+def parseArguments():
+	usage = 'python3 client.py command filename hostname:port cipher key'
+	parser = argparse.ArgumentParser(usage=usage)
+
+	# arugments to be parsed
+	parser.add_argument('command', type=str, help='The command argument will \
+	determine if the client will be uploading or downloading data to/from the server. \
+	Valid values are write and read.')
+
+	parser.add_argument('filename', type=str, help='The filename argument specifies \
+	the name of the file to be used by the server application')
+
+	parser.add_argument('hostname_port', type=str, help='The hostname:port argument \
+	specifies the address of the server, and the port on which the server is listening. \
+	The hostname can be specified as a domain name or an IPv4 address. \
+	he port will be an integer in range 0-65535.')
+
+	parser.add_argument('cipher', type=str, help='The cipher argument specifies which \
+	cipher is to be used for encrypting the communication with the server. Valid values \
+	are aes256, aes128 and null.')
+
+	parser.add_argument('key', type=str, help='The key parameter specifies a secret key \
+	that must match the server’s secret key. This key will be also used to derive both \
+	the session keys and the initialization vectors.')
+
+	# parse arguments
+	args = parser.parse_args()
+
+	# error checking
+	if ':' not in args.hostname_port:
+		print('Error, format --> hostname:port')
+		parser.exit('Usage: ' + usage)
+
+	host, port = args.hostname_port.split(':')
+	if port not in range(0, 65536):
+		print('Error, port must be 0-65535')
+		parser.exit('Usage: ' + usage)
+
+	# return arguments to main
+	return args
+
+'''
 Main
 '''
 def Main():
 	args = parseArguments()
-	HOST, PORT = args.split(':')
+	HOST, PORT = args.hostname_port.split(':')
 
 	s = socket.socket()
 	s.connect((HOST, PORT))
