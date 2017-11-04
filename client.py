@@ -5,7 +5,7 @@ import string
 import socket
 
 # globals
-BUFFER_SIZE = 4096
+BUFFER_SIZE = 1024
 HOST = '127.0.0.1'
 PORT = 8000
 
@@ -25,7 +25,7 @@ def sendData(sock, data):
 Handles receiving messages from server
 '''
 def recvMsg(sock):
-	return sock.recv(BUFFER_SIZE).decode()
+	return sock.recv(BUFFER_SIZE).decode('utf-8')
 
 '''
 Handles receiving data from server
@@ -53,6 +53,7 @@ def download(sock):
 	fileName = input("Filename?\n> ")
 	sendMsg(sock, fileName)
 	msg = recvMsg(sock)
+	sendMsg(sock, 'thanks') # needed this to run on lab computers
 
 	# file found
 	if not msg.startswith('Fail!'):

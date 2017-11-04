@@ -9,7 +9,7 @@ from datetime import datetime
 import os
 
 # globals
-BUFFER_SIZE = 4096
+BUFFER_SIZE = 1024
 HOST = '127.0.0.1'
 PORT = 8000
 
@@ -29,7 +29,7 @@ def sendData(sock, data):
 Handles receiving messages from client
 '''
 def recvMsg(sock):
-	return sock.recv(BUFFER_SIZE).decode()
+	return sock.recv(BUFFER_SIZE).decode('utf-8')
 
 '''
 Handles receiving data from client
@@ -66,6 +66,7 @@ def sendFile(sock):
 		print('File Name received: {}'.format(fileName))
 		if os.path.isfile(fileName):
 			sendMsg(sock, 'File Found!')
+			ack = recvMsg(sock)
 			fileSize = os.path.getsize(fileName)
 			sendMsg(sock, str(fileSize))
 
