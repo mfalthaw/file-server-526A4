@@ -9,6 +9,11 @@ import argparse
 BUFFER_SIZE = 1024
 HOST = '127.0.0.1'
 PORT = 8000
+CIPHERS = [
+	'null',
+	'aes128',
+	'aes256'
+]
 
 '''
 Handles sending messages to server
@@ -117,8 +122,12 @@ def parseArguments():
 		parser.exit('Usage: ' + usage)
 
 	host, port = args.hostname_port.split(':')
-	if port not in range(0, 65536):
+	if int(port) not in range(0, 65536):
 		print('Error, port must be 0-65535')
+		parser.exit('Usage: ' + usage)
+
+	if args.cipher not in CIPHERS:
+		print('Error, cipher must be: aes128, aes256, or null')
 		parser.exit('Usage: ' + usage)
 
 	# return arguments to main
