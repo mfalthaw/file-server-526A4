@@ -42,7 +42,6 @@ Handle new client
 '''
 def handleClient(name, sock):
 	while True:
-		print('handleClient')
 		task = recvMsg(sock)
 		if task.lower() == 'upload':
 			receiveFile(sock)
@@ -61,33 +60,34 @@ def receiveFile(name, sock):
 Handles sending files to client
 '''
 def sendFile(sock):
-	print('sendFile')
 	while True:
-		fileName = recvData(sock)
+		fileName = recvMsg(sock)
 
 		print('File Name received: {}'.format(fileName))
 		if os.path.isfile(fileName):
-			print('Found File')
+			sendMsg(sock, 'File Found!')
 			fileSize = os.path.getsize(fileName)
-			sendMsg(sock, 'Success! File Size: ' + str(fileSize))
-			
-			userResponse = recvMsg(sock)
-			
-			if userResponse.lower() == 'ok':
-				# start sending file
-				with open(fileName, 'rb') as file:
+			sendMsg(sock, str(fileSize))
+
+			# start sending file
+			with open(fileName, 'rb') as file:
+				bytesToSend = file.read(BUFFER_SIZE)
+				sendData(sock, bytesToSend)
+				
+				totalSent = len(bytesToSend)
+				while totalSent < fileSize:
 					bytesToSend = file.read(BUFFER_SIZE)
 					sendData(sock, bytesToSend)
-					
-					while bytesToSend.decode() != '':
-						bytesToSend = file.read(BUFFER_SIZE)
-						sendData(sock, bytesToSend)
+					totalSent += len(bytesToSend)
 
-					print('file transfer completed!')
-			else:
-				print('userResponse was: {}'.format(userResponse))
+				print('File transfer completed!')
+				file.close()
+				return
+
+		# file not found
 		else:
-			send(sock, "Fail! Can't find: {}".format(fileName))
+			sendMsg(sock, "Fail! Can't find: {}".format(fileName))
+			return
 
 	# close connection
 	sock.close()

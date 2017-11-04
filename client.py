@@ -16,6 +16,24 @@ def sendMsg(sock, str):
 	sock.send(str.encode('utf-8'))
 
 '''
+Handles sending data to server
+'''
+def sendData(sock, data):
+	sock.send(data)
+
+'''
+Handles receiving messages from server
+'''
+def recvMsg(sock):
+	return sock.recv(BUFFER_SIZE).decode()
+
+'''
+Handles receiving data from server
+'''
+def recvData(sock):
+	return sock.recv(BUFFER_SIZE)
+
+'''
 Prompt the user for download or upload
 '''
 def promptForTask():
@@ -31,36 +49,31 @@ def upload(s):
 '''
 Handles downloading files from server
 '''
-def download(s):
+def download(sock):
 	fileName = input("Filename?\n> ")
-	if fileName != 'q':
-		sendMsg(s, fileName)
-		print('sent fileName: {}'.format(fileName))
-		
-		data = s.recv(BUFFER_SIZE)
-		data = data.decode()
+	sendMsg(sock, fileName)
+	msg = recvMsg(sock)
 
-		if data.startswith('Success!'):
-			fileSize = int(data[20:])
-			msg = input("File Found! " + str(fileSize) + " Bytes. Download? (Y/N)\n> ")
-			if msg.lower().startswith('y'):
-				sendMsg(s, 'OK')
-				file = open('DOWNLOADED_' + fileName, 'wb')
-				
-				data = s.recv(BUFFER_SIZE)
-				totalRecvd = len(data)
-				
-				file.write(data)
-				while totalRecvd < fileSize:
-					data = s.recv(BUFFER_SIZE)
-					totalRecvd += len(data)
-					file.write(data)
-					print("{0:.2f} %".format((totalRecvd/float(fileSize)) * 100))
+	# file found
+	if not msg.startswith('Fail!'):
+		fileSize = int(recvMsg(sock))
+		file = open('DOWNLOADED_' + fileName, 'wb')
+		data = recvData(sock)
+		file.write(data)
 
-				print("Download complete!")
-				# if not success
-		else:
-			print("File doesn't exist!")
+		totalRecvd = len(data)
+		while totalRecvd < fileSize:
+			data = recvData(sock)
+			file.write(data)
+			totalRecvd += len(data)
+			print("{0:.2f} %".format((totalRecvd/float(fileSize)) * 100))
+
+		file.close()
+		print("Download complete!")
+	
+	# if file not found
+	else:
+		print("File doesn't exist!")
 
 '''
 Main
