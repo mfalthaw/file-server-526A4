@@ -40,13 +40,6 @@ def recvData(sock):
 	return sock.recv(BUFFER_SIZE)
 
 '''
-Prompt the user for download or upload
-'''
-def promptForTask():
-	task = input('What would you like to do? Upload or Download?\n> ')
-	return task
-
-'''
 Handles uploading files to server
 '''
 def upload(s):
@@ -132,6 +125,14 @@ def parseArguments():
 
 	# return arguments to main
 	return args
+'''
+Handles starting the client program
+'''
+def startClient(command, filename, host, port, cipher, key):
+	# confirm connection success with specified arguments
+	print('Client started!\n\tCommand: {}\n\tFile Name: {}\n\tHost: {}\n\tPort: {}\
+	\n\tCipher: {}\n\tKey: {}'.format(command, filename, host, port, cipher, key))
+
 
 '''
 Main
@@ -140,21 +141,12 @@ def Main():
 	args = parseArguments()
 	HOST, PORT = args.hostname_port.split(':')
 
+	# connect to server
 	s = socket.socket()
 	s.connect((HOST, int(PORT)))
 
-	print('Connection success!\n\tCommand: {}\n\tFile Name: {}\n\tHost: {}\n\tPort: {}\
-	\n\tCipher: {}\n\tKey: {}'.format(args.command, args.filename, HOST, PORT,\
-	args.cipher, args.key))
-
-	while True:
-		task = promptForTask()
-		if task == 'upload':
-			sendMsg(s, 'upload')
-			upload(s)
-		elif task == 'download':
-			sendMsg(s, 'download')
-			download(s)
+	# start client progtam
+	startClient(args.command, args.filename, HOST, PORT, args.cipher, args.key)
 
 	# close socket
 	s.close()
