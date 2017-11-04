@@ -7,8 +7,8 @@ import argparse
 
 # globals
 BUFFER_SIZE = 1024
-HOST = '127.0.0.1'
-PORT = 8000
+# HOST = '127.0.0.1'
+# PORT = 8000
 CIPHERS = [
 	'null',
 	'aes128',
@@ -141,7 +141,11 @@ def Main():
 	HOST, PORT = args.hostname_port.split(':')
 
 	s = socket.socket()
-	s.connect((HOST, PORT))
+	s.connect((HOST, int(PORT)))
+
+	print('Connection success!\n\tCommand: {}\n\tFile Name: {}\n\tHost: {}\n\tPort: {}\
+	\n\tCipher: {}\n\tKey: {}'.format(args.command, args.filename, HOST, PORT,\
+	args.cipher, args.key))
 
 	while True:
 		task = promptForTask()
