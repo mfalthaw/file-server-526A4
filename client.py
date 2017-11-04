@@ -7,8 +7,7 @@ import argparse
 
 # globals
 BUFFER_SIZE = 1024
-# HOST = '127.0.0.1'
-# PORT = 8000
+DEBUG = True
 CIPHERS = [
 	'null',
 	'aes128',
@@ -19,6 +18,8 @@ CIPHERS = [
 Handles sending messages to server
 '''
 def sendMsg(sock, str):
+	if DEBUG:
+		print('Sent: ' + str)
 	sock.send(str.encode('utf-8'))
 
 '''
@@ -31,7 +32,10 @@ def sendData(sock, data):
 Handles receiving messages from server
 '''
 def recvMsg(sock):
-	return sock.recv(BUFFER_SIZE).decode('utf-8')
+	msg = sock.recv(BUFFER_SIZE).decode('utf-8')
+	if DEBUG:
+		print('Recvd: ' + msg)
+	return msg
 
 '''
 Handles receiving data from server
@@ -48,8 +52,9 @@ def upload(s):
 '''
 Handles downloading files from server
 '''
-def download(sock):
-	fileName = input("Filename?\n> ")
+def download(sock, fileName):
+	sendMsg(sock, 'download')
+	ack = recvMsg(sock) # needed this to run on lab computers
 	sendMsg(sock, fileName)
 	msg = recvMsg(sock)
 	sendMsg(sock, 'ok') # needed this to run on lab computers
@@ -70,8 +75,9 @@ def download(sock):
 			totalRecvd += len(data)
 			print("{0:.2f} %".format((totalRecvd/float(fileSize)) * 100))
 
-		file.close()
 		print("Download complete!")
+		file.close()
+		sock.close()
 
 	# if file not found
 	else:
@@ -139,11 +145,9 @@ def startClient(socket, command, filename, host, port, cipher, key):
 
 	# handle command
 	if command == 'read':
-		# do stuff
-		pass
+		download(socket, filename)
 	elif command == 'write':
-		# do stuff
-		pass
+		upload(socket, filename)
 	else:
 		print('Unsupported command')
 
@@ -154,14 +158,11 @@ Main
 def Main():
 	args = parseArguments()
 	HOST, PORT = args.hostname_port.split(':')
-
 	# connect to server
 	s = socket.socket()
 	s.connect((HOST, int(PORT)))
-
 	# start client progtam
 	startClient(s, args.command, args.filename, HOST, PORT, args.cipher, args.key)
-
 	# close socket
 	s.close()
 

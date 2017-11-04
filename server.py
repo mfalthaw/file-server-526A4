@@ -12,11 +12,14 @@ import os
 BUFFER_SIZE = 1024
 HOST = '127.0.0.1'
 PORT = 8000
+DEBUG = True
 
 '''
 Handles sending messages to client
 '''
 def sendMsg(sock, str):
+	if DEBUG:
+		print('Sent: ' + str)
 	sock.send(str.encode('utf-8'))
 
 '''
@@ -29,7 +32,10 @@ def sendData(sock, data):
 Handles receiving messages from client
 '''
 def recvMsg(sock):
-	return sock.recv(BUFFER_SIZE).decode('utf-8')
+	msg = sock.recv(BUFFER_SIZE).decode('utf-8')
+	if DEBUG:
+		print('Recvd: ' + msg)
+	return msg
 
 '''
 Handles receiving data from client
@@ -41,14 +47,14 @@ def recvData(sock):
 Handle new client
 '''
 def handleClient(name, sock):
-	while True:
-		task = recvMsg(sock)
-		if task.lower() == 'upload':
-			receiveFile(sock)
-		elif task.lower() == 'download':
-			sendFile(sock)
-		else:
-			sendMsg(sock, "Supported tasks: upload or download")
+	task = recvMsg(sock)
+	sendMsg(sock, 'ok') # needed this to run on lab computers
+	if task.lower() == 'upload':
+		receiveFile(sock)
+	elif task.lower() == 'download':
+		sendFile(sock)
+	else:
+		sendMsg(sock, "Supported tasks: upload or download")
 
 '''
 Handles receiving files from client
@@ -60,41 +66,37 @@ def receiveFile(name, sock):
 Handles sending files to client
 '''
 def sendFile(sock):
-	while True:
-		fileName = recvMsg(sock)
+	fileName = recvMsg(sock)
 
-		print('File Name received: {}'.format(fileName))
-		if os.path.isfile(fileName):
-			sendMsg(sock, 'File Found!')
-			ack = recvMsg(sock) # needed this to run on lab computers
-			fileSize = os.path.getsize(fileName)
-			sendMsg(sock, str(fileSize))
+	print('File Name received: {}'.format(fileName))
+	if os.path.isfile(fileName):
+		sendMsg(sock, 'File Found!')
+		ack = recvMsg(sock) # needed this to run on lab computers
+		fileSize = os.path.getsize(fileName)
+		sendMsg(sock, str(fileSize))
+		ack = recvMsg(sock) # needed this to run on lab computers
+
+		# start sending file
+		with open(fileName, 'rb') as file:
+			bytesToSend = file.read(BUFFER_SIZE)
+			sendData(sock, bytesToSend)
 			ack = recvMsg(sock) # needed this to run on lab computers
 
-			# start sending file
-			with open(fileName, 'rb') as file:
+			totalSent = len(bytesToSend)
+			while totalSent < fileSize:
 				bytesToSend = file.read(BUFFER_SIZE)
 				sendData(sock, bytesToSend)
-				ack = recvMsg(sock) # needed this to run on lab computers
+				totalSent += len(bytesToSend)
 
-				totalSent = len(bytesToSend)
-				while totalSent < fileSize:
-					bytesToSend = file.read(BUFFER_SIZE)
-					sendData(sock, bytesToSend)
-					totalSent += len(bytesToSend)
-
-				print('File transfer completed!')
-				file.close()
-				return
-
-		# file not found
-		else:
-			sendMsg(sock, "Fail! Can't find: {}".format(fileName))
-			ack = recvMsg(sock) # needed this to run on lab computers
+			print('File transfer completed!')
+			file.close()
 			return
 
-	# close connection
-	sock.close()
+	# file not found
+	else:
+		sendMsg(sock, "Fail! Can't find: {}".format(fileName))
+		ack = recvMsg(sock) # needed this to run on lab computers
+		return
 
 
 def Main():
@@ -104,11 +106,9 @@ def Main():
 	s.listen(5)
 	print('Server started! Listening on {}:{}...'.format(str(HOST), str(PORT)))
 
-	while True:
-		conn, addr = s.accept()
-		print('{}: New connection from: {}'.format(datetime.now().strftime('%H:%M:%S'), str(addr)))
-		handleClient('name', conn)
-
+	conn, addr = s.accept()
+	print('{}: New connection from: {}'.format(datetime.now().strftime('%H:%M:%S'), str(addr)))
+	handleClient('name', conn)
 
 	# close connection
 	s.close()
