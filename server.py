@@ -66,15 +66,17 @@ def sendFile(sock):
 		print('File Name received: {}'.format(fileName))
 		if os.path.isfile(fileName):
 			sendMsg(sock, 'File Found!')
-			ack = recvMsg(sock)
+			ack = recvMsg(sock) # needed this to run on lab computers
 			fileSize = os.path.getsize(fileName)
 			sendMsg(sock, str(fileSize))
+			ack = recvMsg(sock) # needed this to run on lab computers
 
 			# start sending file
 			with open(fileName, 'rb') as file:
 				bytesToSend = file.read(BUFFER_SIZE)
 				sendData(sock, bytesToSend)
-				
+				ack = recvMsg(sock) # needed this to run on lab computers
+
 				totalSent = len(bytesToSend)
 				while totalSent < fileSize:
 					bytesToSend = file.read(BUFFER_SIZE)
@@ -88,6 +90,7 @@ def sendFile(sock):
 		# file not found
 		else:
 			sendMsg(sock, "Fail! Can't find: {}".format(fileName))
+			ack = recvMsg(sock) # needed this to run on lab computers
 			return
 
 	# close connection

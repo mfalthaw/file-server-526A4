@@ -53,13 +53,15 @@ def download(sock):
 	fileName = input("Filename?\n> ")
 	sendMsg(sock, fileName)
 	msg = recvMsg(sock)
-	sendMsg(sock, 'thanks') # needed this to run on lab computers
+	sendMsg(sock, 'ok') # needed this to run on lab computers
 
 	# file found
 	if not msg.startswith('Fail!'):
 		fileSize = int(recvMsg(sock))
+		sendMsg(sock, 'ok') # needed this to run on lab computers
 		file = open('DOWNLOADED_' + fileName, 'wb')
 		data = recvData(sock)
+		sendMsg(sock, 'ok') # needed this to run on lab computers
 		file.write(data)
 
 		totalRecvd = len(data)
@@ -71,7 +73,7 @@ def download(sock):
 
 		file.close()
 		print("Download complete!")
-	
+
 	# if file not found
 	else:
 		print("File doesn't exist!")
@@ -82,7 +84,7 @@ Main
 def Main():
 	s = socket.socket()
 	s.connect((HOST, PORT))
-	
+
 	while True:
 		task = promptForTask()
 		if task == 'upload':
