@@ -74,15 +74,20 @@ def sendFile(sock):
 				bytesToSend = file.read(BUFFER_SIZE)
 				sendData(sock, bytesToSend)
 				
-				while bytesToSend.decode().strip() != '':
+				totalSent = len(bytesToSend)
+				while totalSent < fileSize:
 					bytesToSend = file.read(BUFFER_SIZE)
 					sendData(sock, bytesToSend)
+					totalSent += len(bytesToSend)
 
 				print('File transfer completed!')
+				file.close()
+				return
 
 		# file not found
 		else:
 			sendMsg(sock, "Fail! Can't find: {}".format(fileName))
+			return
 
 	# close connection
 	sock.close()

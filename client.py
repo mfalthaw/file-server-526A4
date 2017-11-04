@@ -57,7 +57,6 @@ def download(sock):
 	# file found
 	if not msg.startswith('Fail!'):
 		fileSize = int(recvMsg(sock))
-		print('size: '.format(fileSize))
 		file = open('DOWNLOADED_' + fileName, 'wb')
 		data = recvData(sock)
 		file.write(data)
