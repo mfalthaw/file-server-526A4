@@ -107,8 +107,8 @@ def Main():
 	while True:
 		conn, addr = s.accept()
 		print('{}: New connection from: {}'.format(datetime.now().strftime('%H:%M:%S'), str(addr)))
-		thread = threading.Thread(target=handleClient, args=("handleClientThread", conn))
-		thread.start()
+		handleClient('name', conn)
+
 
 	# close connection
 	s.close()
