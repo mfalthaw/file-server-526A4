@@ -110,6 +110,10 @@ def parseArguments():
 	args = parser.parse_args()
 
 	# error checking
+	if args.command not in ('read', 'write'):
+		print("Error, client only supports 'read' or 'write'")
+		parser.exit('Usage: ' + usage)
+
 	if ':' not in args.hostname_port:
 		print('Error, format --> hostname:port')
 		parser.exit('Usage: ' + usage)
@@ -128,10 +132,20 @@ def parseArguments():
 '''
 Handles starting the client program
 '''
-def startClient(command, filename, host, port, cipher, key):
+def startClient(socket, command, filename, host, port, cipher, key):
 	# confirm connection success with specified arguments
 	print('Client started!\n\tCommand: {}\n\tFile Name: {}\n\tHost: {}\n\tPort: {}\
 	\n\tCipher: {}\n\tKey: {}'.format(command, filename, host, port, cipher, key))
+
+	# handle command
+	if command == 'read':
+		# do stuff
+		pass
+	elif command == 'write':
+		# do stuff
+		pass
+	else:
+		print('Unsupported command')
 
 
 '''
@@ -146,7 +160,7 @@ def Main():
 	s.connect((HOST, int(PORT)))
 
 	# start client progtam
-	startClient(args.command, args.filename, HOST, PORT, args.cipher, args.key)
+	startClient(s, args.command, args.filename, HOST, PORT, args.cipher, args.key)
 
 	# close socket
 	s.close()
