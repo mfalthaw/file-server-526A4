@@ -47,8 +47,20 @@ def recvData(sock):
 '''
 Handles uploading files to server
 '''
-def upload(s):
-	print('Hey! you want to upload')
+def upload(sock, fileName):
+	sendMsg(sock, 'upload')
+	ack = recvMsg(sock) # needed this to run on lab compute
+	sendMsg(sock, fileName)
+	ack = recvMsg(sock) # needed this to run on lab compute
+
+	bytesToSend = sys.stdin.buffer.read(BUFFER_SIZE)
+	sendData(sock, bytesToSend)
+	while bytesToSend:
+		bytesToSend = sys.stdin.buffer.read(BUFFER_SIZE)
+		sendData(sock, bytesToSend)
+
+	print('Upload complete!', file=sys.stderr)
+	return
 
 '''
 Handles downloading files from server
@@ -76,7 +88,7 @@ def download(sock, fileName):
 
 	# if file not found
 	else:
-		print("File doesn't exist!")
+		print("File doesn't exist!", file=sys.stderr)
 
 '''
 Handles parsing arguments
@@ -146,7 +158,7 @@ def startClient(socket, command, filename, host, port, cipher, key):
 	elif command == 'write':
 		upload(socket, filename)
 	else:
-		print('Unsupported command')
+		print('Unsupported command', file=sys.stderr)
 
 
 '''

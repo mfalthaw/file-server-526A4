@@ -44,23 +44,25 @@ def recvData(sock):
 	return sock.recv(BUFFER_SIZE)
 
 '''
-Handle new client
-'''
-def handleClient(name, sock):
-	task = recvMsg(sock)
-	sendMsg(sock, 'ok') # needed this to run on lab computers
-	if task.lower() == 'upload':
-		receiveFile(sock)
-	elif task.lower() == 'download':
-		sendFile(sock)
-	else:
-		sendMsg(sock, "Supported tasks: upload or download")
-
-'''
 Handles receiving files from client
 '''
-def receiveFile(name, sock):
-	print("receivingFile")
+def receiveFile(sock):
+	fileName = recvMsg(sock)
+	sendMsg(sock, 'ok') # needed this to run on lab computers
+	print('File Name received: {}'.format(fileName))
+
+	# create a file
+	file = open('UPLOADED_' + fileName, 'wb')
+	data = recvData(sock)
+	sendMsg(sock, 'ok') # needed this to run on lab computers
+	file.write(data)
+	while data:
+		data = recvData(sock)
+		file.write(data)
+
+	print('Upload complete!')
+	file.close()
+	return
 
 '''
 Handles sending files to client
@@ -94,6 +96,18 @@ def sendFile(sock):
 		ack = recvMsg(sock) # needed this to run on lab computers
 		return
 
+'''
+Handle new client
+'''
+def handleClient(name, sock):
+	task = recvMsg(sock)
+	sendMsg(sock, 'ok') # needed this to run on lab computers
+	if task.lower() == 'upload':
+		receiveFile(sock)
+	elif task.lower() == 'download':
+		sendFile(sock)
+	else:
+		sendMsg(sock, "Supported tasks: upload or download")
 
 def Main():
 	# initilize socket & listen for connections
