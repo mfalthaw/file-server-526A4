@@ -8,12 +8,12 @@ import argparse
 
 # globals
 BUFFER_SIZE = 1024
-DEBUG = False
 CIPHERS = [
 	'null',
 	'aes128',
 	'aes256'
 ]
+DEBUG = False
 
 '''
 Handles sending messages to server

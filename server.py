@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 #server.py
-# Ref: https://www.youtube.com/watch?v=LJTaPaFGmM4
 
 import string
 import socket
