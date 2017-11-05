@@ -73,8 +73,6 @@ def sendFile(sock):
 		sendMsg(sock, 'File Found!')
 		ack = recvMsg(sock) # needed this to run on lab computers
 		fileSize = os.path.getsize(fileName)
-		sendMsg(sock, str(fileSize))
-		ack = recvMsg(sock) # needed this to run on lab computers
 
 		# start sending file
 		with open(fileName, 'rb') as file:
@@ -82,11 +80,9 @@ def sendFile(sock):
 			sendData(sock, bytesToSend)
 			ack = recvMsg(sock) # needed this to run on lab computers
 
-			totalSent = len(bytesToSend)
-			while totalSent < fileSize:
+			while bytesToSend:
 				bytesToSend = file.read(BUFFER_SIZE)
 				sendData(sock, bytesToSend)
-				totalSent += len(bytesToSend)
 
 			print('File transfer completed!')
 			file.close()
@@ -102,6 +98,7 @@ def sendFile(sock):
 def Main():
 	# initilize socket & listen for connections
 	s = socket.socket()
+	s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # handles 'port in use'
 	s.bind((HOST, PORT))
 	s.listen(5)
 	print('Server started! Listening on {}:{}...'.format(str(HOST), str(PORT)))

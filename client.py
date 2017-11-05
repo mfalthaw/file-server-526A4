@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 #client.py
 
+import sys
 import string
 import socket
 import argparse
 
 # globals
 BUFFER_SIZE = 1024
-DEBUG = True
+DEBUG = False
 CIPHERS = [
 	'null',
 	'aes128',
@@ -61,22 +62,16 @@ def download(sock, fileName):
 
 	# file found
 	if not msg.startswith('Fail!'):
-		fileSize = int(recvMsg(sock))
-		sendMsg(sock, 'ok') # needed this to run on lab computers
-		file = open('DOWNLOADED_' + fileName, 'wb')
 		data = recvData(sock)
 		sendMsg(sock, 'ok') # needed this to run on lab computers
-		file.write(data)
+		print('\n')
+		sys.stdout.buffer.write(data)
 
-		totalRecvd = len(data)
-		while totalRecvd < fileSize:
+		while data:
 			data = recvData(sock)
-			file.write(data)
-			totalRecvd += len(data)
-			print("{0:.2f} %".format((totalRecvd/float(fileSize)) * 100))
-
-		print("Download complete!")
-		file.close()
+			sys.stdout.buffer.write(data)
+		print('\n')
+		print('Download complete!', file=sys.stderr)
 		sock.close()
 
 	# if file not found
@@ -135,13 +130,15 @@ def parseArguments():
 
 	# return arguments to main
 	return args
+
 '''
 Handles starting the client program
 '''
 def startClient(socket, command, filename, host, port, cipher, key):
-	# confirm connection success with specified arguments
-	print('Client started!\n\tCommand: {}\n\tFile Name: {}\n\tHost: {}\n\tPort: {}\
-	\n\tCipher: {}\n\tKey: {}'.format(command, filename, host, port, cipher, key))
+	if DEBUG:
+		# confirm connection success with specified arguments
+		print('Client started!\n\tCommand: {}\n\tFile Name: {}\n\tHost: {}\n\tPort: {}\
+		\n\tCipher: {}\n\tKey: {}'.format(command, filename, host, port, cipher, key))
 
 	# handle command
 	if command == 'read':
