@@ -4,14 +4,23 @@
 import string
 import socket
 import threading
+import hashlib
 from datetime import datetime
+import binascii
 import os
 
 # globals
-BUFFER_SIZE = 1024
+BUFFER_SIZE = 16
 HOST = '127.0.0.1'
 PORT = 8000
 DEBUG = True
+
+secret_key = "blabjfkdsl"
+nonce = binascii.hexlify(os.urandom(16)).decode()
+print(nonce)
+iv = hashlib.sha256((secret_key + nonce + "IV").encode())
+session_key = hashlib.sha256((secret_key + nonce + "SK").encode())
+print(iv.hexdigest())
 
 '''
 Handles sending messages to client
