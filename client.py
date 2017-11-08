@@ -1,10 +1,15 @@
 #!/usr/bin/env python
 #client.py
 
-import sys
 import string
 import socket
+import hashlib
+from datetime import datetime
+import binascii
+import sys
+import os
 import argparse
+import Crypto
 
 # globals
 BUFFER_SIZE = 1024
@@ -15,19 +20,40 @@ CIPHERS = [
 ]
 DEBUG = False
 
+secret_key = "blabjfkdsl"
+nonce = binascii.hexlify(os.urandom(16)).decode()
+print(nonce)
+iv = hashlib.sha256((secret_key + nonce + "IV").encode())
+session_key = hashlib.sha256((secret_key + nonce + "SK").encode())
+print(iv.hexdigest())
+
+'''
+Handles encrypting data
+'''
+def encrypt(data):
+	encryptor = AES.new(session_key, AES.MODE_CBC, IV=IV)
+	return encryptor.encrypt('''stuff''')
+
+'''
+Handles decrypting data
+'''
+def decrypt(data):
+	encryptor = AES.new(session_key, AES.MODE_CBC, IV=IV)
+	return encryptor.decrypt('''stuff''')
+
 '''
 Handles sending messages to server
 '''
 def sendMsg(sock, str):
 	if DEBUG:
 		print('Sent: ' + str)
-	sock.send(str.encode('utf-8'))
+	sock.send(encrypt(str.encode('utf-8')))
 
 '''
 Handles sending data to server
 '''
 def sendData(sock, data):
-	sock.send(data)
+	sock.send(encrypt(data))
 
 '''
 Handles receiving messages from server
