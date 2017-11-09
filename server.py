@@ -9,6 +9,7 @@ import binascii
 import sys
 import os
 import argparse
+from Crypto.Cipher import AES
 
 # globals
 BUFFER_SIZE = 16
@@ -21,25 +22,52 @@ HOST = '127.0.0.1'
 PORT = 8000
 DEBUG = True
 
+SECRET_KEY = "blabjfkdsl"
+SESSION_KEY = '0000000000000000'
+iv = '0000000000000000'
+
+'''
+Handles encrypting data
+'''
+def encrypt(data):
+	encryptor = AES.new(SESSION_KEY, AES.MODE_CBC, IV=iv)
+
+	# pad
+	length = 16 - (len(data) % 16)
+	data += bytes([length])*length
+
+	return encryptor.encrypt(data)
+
+'''
+Handles decrypting data
+'''
+def decrypt(data):
+	encryptor = AES.new(SESSION_KEY, AES.MODE_CBC, IV=iv)
+	# remove padding
+	data = encryptor.decrypt(data)
+	data = data[:-data[-1]]
+	return data
+
 '''
 Handles sending messages to client
 '''
 def sendMsg(sock, str):
 	if DEBUG:
 		print('Sent: ' + str)
-	sock.send(str.encode('utf-8'))
+	sock.send(encrypt(str.encode('utf-8')))
 
 '''
 Handles sending data to client
 '''
 def sendData(sock, data):
-	sock.send(data)
+	sock.send(encrypt(data))
 
 '''
 Handles receiving messages from client
 '''
 def recvMsg(sock):
-	msg = sock.recv(BUFFER_SIZE).decode('utf-8')
+	msg = sock.recv(BUFFER_SIZE)
+	msg = decrypt(msg).decode('utf-8')
 	if DEBUG:
 		print('Recvd: ' + msg)
 	return msg
@@ -48,7 +76,9 @@ def recvMsg(sock):
 Handles receiving data from client
 '''
 def recvData(sock):
-	return sock.recv(BUFFER_SIZE)
+	data = sock.recv(BUFFER_SIZE)
+	data = decrypt(data)
+	return data
 
 '''
 Handles receiving files from client

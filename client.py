@@ -9,7 +9,7 @@ import binascii
 import sys
 import os
 import argparse
-import Crypto
+from Crypto.Cipher import AES
 
 # globals
 BUFFER_SIZE = 1024
@@ -18,28 +18,38 @@ CIPHERS = [
 	'aes128',
 	'aes256'
 ]
-DEBUG = False
+DEBUG = True
 
-secret_key = "blabjfkdsl"
-nonce = binascii.hexlify(os.urandom(16)).decode()
-print(nonce)
-iv = hashlib.sha256((secret_key + nonce + "IV").encode())
-session_key = hashlib.sha256((secret_key + nonce + "SK").encode())
-print(iv.hexdigest())
+SECRET_KEY = "blabjfkdsl"
+SESSION_KEY = '0000000000000000'
+iv = '0000000000000000'
+# nonce = binascii.hexlify(os.urandom(16)).decode()
+# print(nonce)
+# iv = hashlib.sha256((SECRET_KEY + nonce + "IV").encode())
+# SESSION_KEY = hashlib.sha256((SECRET_KEY + nonce + "SK").encode())
+# print(iv.hexdigest())
 
 '''
 Handles encrypting data
 '''
 def encrypt(data):
-	encryptor = AES.new(session_key, AES.MODE_CBC, IV=IV)
-	return encryptor.encrypt('''stuff''')
+	encryptor = AES.new(SESSION_KEY, AES.MODE_CBC, IV=iv)
+
+	# pad
+	length = 16 - (len(data) % 16)
+	data += bytes([length])*length
+
+	return encryptor.encrypt(data)
 
 '''
 Handles decrypting data
 '''
 def decrypt(data):
-	encryptor = AES.new(session_key, AES.MODE_CBC, IV=IV)
-	return encryptor.decrypt('''stuff''')
+	encryptor = AES.new(SESSION_KEY, AES.MODE_CBC, IV=iv)
+	# remove padding
+	data = encryptor.decrypt(data)
+	data = data[:-data[-1]]
+	return data
 
 '''
 Handles sending messages to server
@@ -59,7 +69,8 @@ def sendData(sock, data):
 Handles receiving messages from server
 '''
 def recvMsg(sock):
-	msg = sock.recv(BUFFER_SIZE).decode('utf-8')
+	msg = sock.recv(BUFFER_SIZE)
+	msg = decrypt(msg).decode('utf-8')
 	if DEBUG:
 		print('Recvd: ' + msg)
 	return msg
@@ -68,7 +79,9 @@ def recvMsg(sock):
 Handles receiving data from server
 '''
 def recvData(sock):
-	return sock.recv(BUFFER_SIZE)
+	data = sock.recv(BUFFER_SIZE)
+	data = decrypt(data)
+	return data
 
 '''
 Handles uploading files to server
@@ -196,7 +209,7 @@ def Main():
 	# connect to server
 	s = socket.socket()
 	s.connect((HOST, int(PORT)))
-	# start client progtam
+	# start client program
 	startClient(s, args.command, args.filename, HOST, PORT, args.cipher, args.key)
 	# close socket
 	s.close()
