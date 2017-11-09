@@ -12,7 +12,7 @@ import argparse
 from Crypto.Cipher import AES
 
 # globals
-BUFFER_SIZE = 16
+BUFFER_SIZE = 31
 CIPHERS = [
 	'null',
 	'aes128',
