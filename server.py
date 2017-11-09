@@ -22,7 +22,7 @@ HOST = '127.0.0.1'
 PORT = 8000
 DEBUG = True
 
-SECRET_KEY = "blabjfkdsl"
+SECRET_KEY = "0000000000000000"
 SESSION_KEY = '0000000000000000'
 iv = '0000000000000000'
 
@@ -31,11 +31,11 @@ Handles encrypting data
 '''
 def encrypt(data):
 	encryptor = AES.new(SESSION_KEY, AES.MODE_CBC, IV=iv)
-
+	print('before pad: {}'.format(len(data)))
 	# pad
 	length = 16 - (len(data) % 16)
 	data += bytes([length])*length
-
+	print('after pad: {}'.format(len(data)))
 	return encryptor.encrypt(data)
 
 '''
@@ -77,8 +77,7 @@ Handles receiving data from client
 '''
 def recvData(sock):
 	data = sock.recv(BUFFER_SIZE)
-	data = decrypt(data)
-	return data
+	return decrypt(data)
 
 '''
 Handles receiving files from client
@@ -111,15 +110,16 @@ def sendFile(sock):
 	if os.path.isfile(fileName):
 		sendMsg(sock, 'File Found!')
 		ack = recvMsg(sock) # needed this to run on lab computers
-		fileSize = os.path.getsize(fileName)
+		# fileSize = os.path.getsize(fileName)
 
 		# start sending file
 		with open(fileName, 'rb') as file:
 			bytesToSend = file.read(BUFFER_SIZE)
 			sendData(sock, bytesToSend)
-			ack = recvMsg(sock) # needed this to run on lab computers
+			# ack = recvMsg(sock) # needed this to run on lab computers
 
 			while bytesToSend:
+				# sendData(sock, bytesToSend)
 				bytesToSend = file.read(BUFFER_SIZE)
 				sendData(sock, bytesToSend)
 

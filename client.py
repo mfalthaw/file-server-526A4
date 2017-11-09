@@ -12,7 +12,7 @@ import argparse
 from Crypto.Cipher import AES
 
 # globals
-BUFFER_SIZE = 1024
+BUFFER_SIZE = 32
 CIPHERS = [
 	'null',
 	'aes128',
@@ -20,7 +20,7 @@ CIPHERS = [
 ]
 DEBUG = True
 
-SECRET_KEY = "blabjfkdsl"
+SECRET_KEY = "0000000000000000"
 SESSION_KEY = '0000000000000000'
 iv = '0000000000000000'
 # nonce = binascii.hexlify(os.urandom(16)).decode()
@@ -34,11 +34,9 @@ Handles encrypting data
 '''
 def encrypt(data):
 	encryptor = AES.new(SESSION_KEY, AES.MODE_CBC, IV=iv)
-
 	# pad
 	length = 16 - (len(data) % 16)
 	data += bytes([length])*length
-
 	return encryptor.encrypt(data)
 
 '''
@@ -80,8 +78,7 @@ Handles receiving data from server
 '''
 def recvData(sock):
 	data = sock.recv(BUFFER_SIZE)
-	data = decrypt(data)
-	return data
+	return decrypt(data)
 
 '''
 Handles uploading files to server
@@ -114,13 +111,14 @@ def download(sock, fileName):
 	# file found
 	if not msg.startswith('Fail!'):
 		data = recvData(sock)
-		sendMsg(sock, 'ok') # needed this to run on lab computers
-		print('\n')
-		sys.stdout.buffer.write(data)
+		# sendMsg(sock, 'ok') # needed this to run on lab computers
+		# print('\n')
+		# sys.stdout.buffer.write(data)
 
 		while data:
-			data = recvData(sock)
 			sys.stdout.buffer.write(data)
+			data = recvData(sock)
+			# sys.stdout.buffer.write(data)
 		print('\n')
 		print('Download complete!', file=sys.stderr)
 		sock.close()
