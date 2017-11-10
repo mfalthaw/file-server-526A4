@@ -13,12 +13,13 @@ from Crypto.Cipher import AES
 
 # globals
 BUFFER_SIZE = 32
-CIPHERS = [
-	'null',
-	'aes128',
-	'aes256'
-]
+CIPHERS = {
+	'null': 'null',
+	'aes128': 'aes128',
+	'aes256': 'aes256',
+}
 DEBUG = True
+CIPHER = 'null'
 
 SECRET_KEY = "0000000000000000"
 SESSION_KEY = '0000000000000000'
@@ -189,6 +190,10 @@ def startClient(socket, command, filename, host, port, cipher, key):
 		# confirm connection success with specified arguments
 		print('Client started!\n\tCommand: {}\n\tFile Name: {}\n\tHost: {}\n\tPort: {}\
 		\n\tCipher: {}\n\tKey: {}'.format(command, filename, host, port, cipher, key))
+
+	# set cipher
+	global CIPHER
+	CIPHER = CIPHERS[cipher]
 
 	# handle command
 	if command == 'read':
