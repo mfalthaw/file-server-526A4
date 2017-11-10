@@ -55,7 +55,7 @@ Handles sending messages to server
 '''
 def sendMsg(sock, str):
 	if DEBUG:
-		print('Sent: ' + str)
+		print('Sent: ' + str, file=sys.stderr)
 	sock.send(encrypt(str.encode('utf-8')))
 
 '''
@@ -71,7 +71,7 @@ def recvMsg(sock):
 	msg = sock.recv(BUFFER_SIZE)
 	msg = decrypt(msg).decode('utf-8')
 	if DEBUG:
-		print('Recvd: ' + msg)
+		print('Recvd: ' + msg, file=sys.stderr)
 	return msg
 
 '''
@@ -121,7 +121,7 @@ def download(sock, fileName):
 			sys.stdout.buffer.write(data)
 			data = recvData(sock)
 			# sys.stdout.buffer.write(data)
-		print('\n')
+		# print('\n')
 		print('Download complete!', file=sys.stderr)
 		sock.close()
 
@@ -189,7 +189,7 @@ def startClient(socket, command, filename, host, port, cipher, key):
 	if DEBUG:
 		# confirm connection success with specified arguments
 		print('Client started!\n\tCommand: {}\n\tFile Name: {}\n\tHost: {}\n\tPort: {}\
-		\n\tCipher: {}\n\tKey: {}'.format(command, filename, host, port, cipher, key))
+		\n\tCipher: {}\n\tKey: {}'.format(command, filename, host, port, cipher, key), file=sys.stderr)
 
 	# set cipher
 	global CIPHER
@@ -198,7 +198,7 @@ def startClient(socket, command, filename, host, port, cipher, key):
 	# set secret_key
 	global SECRET_KEY
 	SECRET_KEY = key
-	
+
 	# handle command
 	if command == 'read':
 		download(socket, filename)
