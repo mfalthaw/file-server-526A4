@@ -12,7 +12,7 @@ import argparse
 from Crypto.Cipher import AES
 
 # globals
-BUFFER_SIZE = 31
+BUFFER_SIZE = 32
 CIPHERS = [
 	'null',
 	'aes128',
@@ -31,11 +31,9 @@ Handles encrypting data
 '''
 def encrypt(data):
 	encryptor = AES.new(SESSION_KEY, AES.MODE_CBC, IV=iv)
-	print('before pad: {}'.format(len(data)))
 	# pad
 	length = 16 - (len(data) % 16)
 	data += bytes([length])*length
-	print('after pad: {}'.format(len(data)))
 	return encryptor.encrypt(data)
 
 '''
@@ -77,6 +75,7 @@ Handles receiving data from client
 '''
 def recvData(sock):
 	data = sock.recv(BUFFER_SIZE)
+	print('data rcvd: {}'.format(len(data)))
 	return decrypt(data)
 
 '''
@@ -88,7 +87,7 @@ def receiveFile(sock):
 	print('File Name received: {}'.format(fileName))
 
 	# create a file
-	file = open('UPLOADED_' + fileName, 'wb')
+	file = open(fileName, 'wb')
 	data = recvData(sock)
 	sendMsg(sock, 'ok') # needed this to run on lab computers
 	file.write(data)
@@ -102,6 +101,7 @@ def receiveFile(sock):
 
 '''
 Handles sending files to client
+Reads file 31 Bytes at a time; 32-1=31 so padding comes up to 32
 '''
 def sendFile(sock):
 	fileName = recvMsg(sock)
@@ -114,13 +114,14 @@ def sendFile(sock):
 
 		# start sending file
 		with open(fileName, 'rb') as file:
-			bytesToSend = file.read(BUFFER_SIZE)
+			# 32-1=31 so padding comes up to 32
+			bytesToSend = file.read(BUFFER_SIZE-1)
 			sendData(sock, bytesToSend)
 			# ack = recvMsg(sock) # needed this to run on lab computers
 
 			while bytesToSend:
 				# sendData(sock, bytesToSend)
-				bytesToSend = file.read(BUFFER_SIZE)
+				bytesToSend = file.read(BUFFER_SIZE-1)
 				sendData(sock, bytesToSend)
 
 			print('File transfer completed!')

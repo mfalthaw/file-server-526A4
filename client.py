@@ -82,6 +82,7 @@ def recvData(sock):
 
 '''
 Handles uploading files to server
+Reads file 31 Bytes at a time; 32-1=31 so padding comes up to 32
 '''
 def upload(sock, fileName):
 	sendMsg(sock, 'upload')
@@ -89,10 +90,10 @@ def upload(sock, fileName):
 	sendMsg(sock, fileName)
 	ack = recvMsg(sock) # needed this to run on lab compute
 
-	bytesToSend = sys.stdin.buffer.read(BUFFER_SIZE)
+	bytesToSend = sys.stdin.buffer.read(BUFFER_SIZE-1)
 	sendData(sock, bytesToSend)
 	while bytesToSend:
-		bytesToSend = sys.stdin.buffer.read(BUFFER_SIZE)
+		bytesToSend = sys.stdin.buffer.read(BUFFER_SIZE-1)
 		sendData(sock, bytesToSend)
 
 	print('Upload complete!', file=sys.stderr)
