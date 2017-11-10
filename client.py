@@ -137,7 +137,7 @@ def parseArguments():
 	usage = 'python3 client.py command filename hostname:port cipher key'
 	parser = argparse.ArgumentParser(usage=usage)
 
-	# arugments to be parsed
+	# arguments to be parsed
 	parser.add_argument('command', type=str, help='The command argument will \
 	determine if the client will be uploading or downloading data to/from the server. \
 	Valid values are write and read.')
@@ -195,6 +195,10 @@ def startClient(socket, command, filename, host, port, cipher, key):
 	global CIPHER
 	CIPHER = CIPHERS[cipher]
 
+	# set secret_key
+	global SECRET_KEY
+	SECRET_KEY = key
+	
 	# handle command
 	if command == 'read':
 		download(socket, filename)

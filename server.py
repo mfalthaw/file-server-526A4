@@ -13,13 +13,7 @@ from Crypto.Cipher import AES
 
 # globals
 BUFFER_SIZE = 32
-CIPHERS = [
-	'null',
-	'aes128',
-	'aes256'
-]
 HOST = '127.0.0.1'
-PORT = 8000
 DEBUG = True
 
 SECRET_KEY = "0000000000000000"
@@ -135,6 +129,33 @@ def sendFile(sock):
 		return
 
 '''
+Handles parsing arguments
+Reference: https://docs.python.org/3/library/argparse.h
+'''
+def parseArguments():
+	usage = 'python3 server.py port key'
+	parser = argparse.ArgumentParser(usage=usage)
+
+	# arguments to be parsed
+	parser.add_argument('port', type=int, help='The port will be an integer in range 0-65535.')
+
+	parser.add_argument('key', type=str, help='The key parameter specifies a secret key \
+	that must match the client\'s secret key. This key will be also used to derive both \
+	the session keys and the initialization vectors.')
+
+	# parse arguments
+	args = parser.parse_args()
+
+	# error checking
+	port = args.port
+	if port not in range(0, 65536):
+		print('Error, port must be 0-65535')
+		parser.exit('Usage: ' + usage)
+
+	# return arguments to main
+	return args
+
+'''
 Handle new client
 '''
 def handleClient(name, sock):
@@ -148,7 +169,9 @@ def handleClient(name, sock):
 		sendMsg(sock, "Supported tasks: upload or download")
 
 def Main():
-	# initilize socket & listen for connections
+	args = parseArguments()
+	PORT = args.port
+	# initialize socket & listen for connections
 	s = socket.socket()
 	s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # handles 'port in use'
 	s.bind((HOST, PORT))
