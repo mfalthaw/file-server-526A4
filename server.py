@@ -69,7 +69,6 @@ Handles receiving data from client
 '''
 def recvData(sock):
 	data = sock.recv(BUFFER_SIZE)
-	print('data rcvd: {}'.format(len(data)), file=sys.stderr)
 	return decrypt(data)
 
 '''
