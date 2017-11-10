@@ -45,7 +45,7 @@ Handles sending messages to client
 '''
 def sendMsg(sock, str):
 	if DEBUG:
-		print('Sent: ' + str)
+		print('Sent: ' + str, file=sys.stderr)
 	sock.send(encrypt(str.encode('utf-8')))
 
 '''
@@ -61,7 +61,7 @@ def recvMsg(sock):
 	msg = sock.recv(BUFFER_SIZE)
 	msg = decrypt(msg).decode('utf-8')
 	if DEBUG:
-		print('Recvd: ' + msg)
+		print('Recvd: ' + msg, file=sys.stderr)
 	return msg
 
 '''
@@ -69,7 +69,7 @@ Handles receiving data from client
 '''
 def recvData(sock):
 	data = sock.recv(BUFFER_SIZE)
-	print('data rcvd: {}'.format(len(data)))
+	print('data rcvd: {}'.format(len(data)), file=sys.stderr)
 	return decrypt(data)
 
 '''
@@ -78,7 +78,7 @@ Handles receiving files from client
 def receiveFile(sock):
 	fileName = recvMsg(sock)
 	sendMsg(sock, 'ok') # needed this to run on lab computers
-	print('File Name received: {}'.format(fileName))
+	print('File Name received: {}'.format(fileName), file=sys.stderr)
 
 	# create a file
 	file = open(fileName, 'wb')
@@ -89,7 +89,7 @@ def receiveFile(sock):
 		data = recvData(sock)
 		file.write(data)
 
-	print('Upload complete!')
+	print('Upload complete!', file=sys.stderr)
 	file.close()
 	return
 
@@ -100,7 +100,7 @@ Reads file 31 Bytes at a time; 32-1=31 so padding comes up to 32
 def sendFile(sock):
 	fileName = recvMsg(sock)
 
-	print('File Name received: {}'.format(fileName))
+	print('File Name received: {}'.format(fileName), file=sys.stderr)
 	if os.path.isfile(fileName):
 		sendMsg(sock, 'File Found!')
 		ack = recvMsg(sock) # needed this to run on lab computers
@@ -118,7 +118,7 @@ def sendFile(sock):
 				bytesToSend = file.read(BUFFER_SIZE-1)
 				sendData(sock, bytesToSend)
 
-			print('File transfer completed!')
+			print('File transfer completed!', file=sys.stderr)
 			file.close()
 			return
 
@@ -176,10 +176,10 @@ def Main():
 	s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # handles 'port in use'
 	s.bind((HOST, PORT))
 	s.listen(5)
-	print('Server started! Listening on {}:{}...'.format(str(HOST), str(PORT)))
+	print('Server started! Listening on {}:{}...'.format(str(HOST), str(PORT)), file=sys.stderr)
 
 	conn, addr = s.accept()
-	print('{}: New connection from: {}'.format(datetime.now().strftime('%H:%M:%S'), str(addr)))
+	print('{}: New connection from: {}'.format(datetime.now().strftime('%H:%M:%S'), str(addr)), file=sys.stderr)
 	handleClient('name', conn)
 
 	# close connection
