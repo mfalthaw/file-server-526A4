@@ -6,18 +6,12 @@ import socket
 import threading
 from datetime import datetime
 import os
-from cryptography.hazmat.primitives.ciphers.aead import AESCCM
 
 # Constants
 BUFFER_SIZE = 1024
 HOST = '127.0.0.1'
 PORT = 8000
 DEBUG = True
-
-# Ciphers
-AES128 = 'aes128'
-AES256 = 'aes256'
-NULL = 'null'
 
 '''
 Handles sending messages to client
@@ -111,7 +105,7 @@ def sendFile(sock):
 Perform the handshake with the client
 '''
 def serverHandshake():
-	# Receive the cipher and noonce
+	# Receive the cipher and nonce
 
 
 	# Perform authentication

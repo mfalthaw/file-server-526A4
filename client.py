@@ -5,22 +5,18 @@ import sys
 import string
 import socket
 import argparse
-from cryptography.hazmat.primitives.ciphers.aead import AESCCM
+
+from utils import Utils
 
 # Constants
 BUFFER_SIZE = 1024
 DEBUG = False
 NONCE_LENGTH = 16
 
-# Ciphers
-AES128 = 'aes128'
-AES256 = 'aes256'
-NULL = 'null'
-
 # Globals
 Globals = {
-	'PROTOCOL' = None,
-	'NOONCE' = None,
+	'CIPHER': None,
+	'NONCE': None
 }
 
 '''
@@ -144,9 +140,9 @@ def parseArguments():
 		print('Error, port must be 0-65535')
 		parser.exit('Usage: ' + usage)
 
-	if args.cipher not in CIPHERS:
+	if args.cipher not in Utils.CIPHERS:
 		print('Error, cipher must be: aes128, aes256, or null')
-		parser.exit('Usage: ' + usage)
+		parser.exit('Usage: {}'.format(usage))
 
 	# return arguments to main
 	return args
@@ -155,6 +151,11 @@ def parseArguments():
 Perform the handshake with the server
 '''
 def handshake():
+	# Send the cipher and nonce
+
+	# Perform authentication
+
+	# Handshake successful
 	raise NotImplementedError()
 
 '''
@@ -198,7 +199,8 @@ def Main():
 	args = parseArguments()
 
 	# Setup globals
-	Globals['']
+	Globals['CIPHER'] = args.cipher
+	Globals['NONCE'] = generateNonce()
 
 	HOST, PORT = args.hostname_port.split(':')
 	# connect to server
