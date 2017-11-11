@@ -12,7 +12,7 @@ import argparse
 from Crypto.Cipher import AES
 
 # globals
-BUFFER_SIZE = 1024
+BUFFER_SIZE = 4096
 HOST = '127.0.0.1'
 DEBUG = True
 
