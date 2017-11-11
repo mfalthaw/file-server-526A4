@@ -107,7 +107,7 @@ def sendFile(sock):
 		# start sending file
 		with open(fileName, 'rb') as file:
 
-			bytesToSend = file.read(BUFFER_SIZE-1) # 32-1=31 so padding comes up to 32
+			bytesToSend = file.read(BUFFER_SIZE-1)
 			while bytesToSend:
 				sendData(sock, bytesToSend)
 				bytesToSend = file.read(BUFFER_SIZE-1)
