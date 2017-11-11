@@ -37,7 +37,8 @@ def decrypt(data):
 	encryptor = AES.new(SESSION_KEY, AES.MODE_CBC, IV=iv)
 	# remove padding
 	data = encryptor.decrypt(data)
-	data = data[:-data[-1]]
+	if data != b'':
+		data = data[:-data[-1]]
 	return data
 
 '''
@@ -82,7 +83,6 @@ def receiveFile(sock):
 	# create a file
 	file = open(fileName, 'wb')
 	data = recvData(sock)
-	sendMsg(sock, 'ok') # needed this to run on lab computers
 	file.write(data)
 	while data:
 		data = recvData(sock)
@@ -103,19 +103,14 @@ def sendFile(sock):
 	if os.path.isfile(fileName):
 		sendMsg(sock, 'File Found!')
 		ack = recvMsg(sock) # needed this to run on lab computers
-		# fileSize = os.path.getsize(fileName)
 
 		# start sending file
 		with open(fileName, 'rb') as file:
-			# 32-1=31 so padding comes up to 32
-			bytesToSend = file.read(BUFFER_SIZE-1)
-			sendData(sock, bytesToSend)
-			# ack = recvMsg(sock) # needed this to run on lab computers
 
+			bytesToSend = file.read(BUFFER_SIZE-1) # 32-1=31 so padding comes up to 32
 			while bytesToSend:
-				# sendData(sock, bytesToSend)
-				bytesToSend = file.read(BUFFER_SIZE-1)
 				sendData(sock, bytesToSend)
+				bytesToSend = file.read(BUFFER_SIZE-1)
 
 			print('File transfer completed!', file=sys.stderr)
 			file.close()

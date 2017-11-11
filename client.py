@@ -24,11 +24,6 @@ CIPHER = 'null'
 SECRET_KEY = "0000000000000000"
 SESSION_KEY = '0000000000000000'
 iv = '0000000000000000'
-# nonce = binascii.hexlify(os.urandom(16)).decode()
-# print(nonce)
-# iv = hashlib.sha256((SECRET_KEY + nonce + "IV").encode())
-# SESSION_KEY = hashlib.sha256((SECRET_KEY + nonce + "SK").encode())
-# print(iv.hexdigest())
 
 '''
 Handles encrypting data
@@ -93,10 +88,9 @@ def upload(sock, fileName):
 	ack = recvMsg(sock) # needed this to run on lab compute
 
 	bytesToSend = sys.stdin.buffer.read(BUFFER_SIZE-1)
-	sendData(sock, bytesToSend)
 	while bytesToSend:
-		bytesToSend = sys.stdin.buffer.read(BUFFER_SIZE-1)
 		sendData(sock, bytesToSend)
+		bytesToSend = sys.stdin.buffer.read(BUFFER_SIZE-1)
 
 	print('Upload complete!', file=sys.stderr)
 	return
@@ -113,16 +107,11 @@ def download(sock, fileName):
 
 	# file found
 	if not msg.startswith('Fail!'):
-		data = recvData(sock)
-		# sendMsg(sock, 'ok') # needed this to run on lab computers
-		# print('\n')
-		# sys.stdout.buffer.write(data)
 
+		data = recvData(sock)
 		while data:
 			sys.stdout.buffer.write(data)
 			data = recvData(sock)
-			# sys.stdout.buffer.write(data)
-		# print('\n')
 		print('Download complete!', file=sys.stderr)
 		sock.close()
 
