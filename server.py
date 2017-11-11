@@ -6,20 +6,32 @@ import socket
 import threading
 from datetime import datetime
 import os
+from cryptography.hazmat.primitives.ciphers.aead import AESCCM
 
-# globals
+# Constants
 BUFFER_SIZE = 1024
 HOST = '127.0.0.1'
 PORT = 8000
 DEBUG = True
 
+# Ciphers
+AES128 = 'aes128'
+AES256 = 'aes256'
+NULL = 'null'
+
 '''
 Handles sending messages to client
 '''
-def sendMsg(sock, str):
+def sendMsg(sock, msg, protocol):
 	if DEBUG:
-		print('Sent: ' + str)
-	sock.send(str.encode('utf-8'))
+		print('protocol: {}'.format(protocol))
+		print('message: {}'.format(msg))
+
+	if not protocol:
+		raise ValueError('should have specified a protocol')
+
+	# sock.send(msg.encode('utf-8')) TODO: Replace
+	raise NotImplementedError()
 
 '''
 Handles sending data to client
@@ -94,6 +106,19 @@ def sendFile(sock):
 		sendMsg(sock, "Fail! Can't find: {}".format(fileName))
 		ack = recvMsg(sock) # needed this to run on lab computers
 		return
+
+'''
+Perform the handshake with the client
+'''
+def serverHandshake():
+	# Receive the cipher and noonce
+
+
+	# Perform authentication
+
+
+	# Server has authenticated client
+	raise NotImplementedError()
 
 '''
 Handle new client

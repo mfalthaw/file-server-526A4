@@ -5,15 +5,23 @@ import sys
 import string
 import socket
 import argparse
+from cryptography.hazmat.primitives.ciphers.aead import AESCCM
 
-# globals
+# Constants
 BUFFER_SIZE = 1024
-CIPHERS = [
-	'null',
-	'aes128',
-	'aes256'
-]
 DEBUG = False
+NONCE_LENGTH = 16
+
+# Ciphers
+AES128 = 'aes128'
+AES256 = 'aes256'
+NULL = 'null'
+
+# Globals
+Globals = {
+	'PROTOCOL' = None,
+	'NOONCE' = None,
+}
 
 '''
 Handles sending messages to server
@@ -144,6 +152,21 @@ def parseArguments():
 	return args
 
 '''
+Perform the handshake with the server
+'''
+def handshake():
+	raise NotImplementedError()
+
+'''
+Generate a random nonce to send to the server
+
+Thanks to 'A T'@https://stackoverflow.com/questions/5590170/what-is-the-standard-method-for-generating-a-nonce-in-python#28186447
+'''
+def generateNonce():
+	return filter(lambda s: s.isalpha(), b64encode(urandom(NONCE_LENGTH * 2)))[:NONCE_LENGTH]
+
+
+'''
 Handles starting the client program
 '''
 def startClient(socket, command, filename, host, port, cipher, key):
@@ -151,6 +174,12 @@ def startClient(socket, command, filename, host, port, cipher, key):
 		# confirm connection success with specified arguments
 		print('Client started!\n\tCommand: {}\n\tFile Name: {}\n\tHost: {}\n\tPort: {}\
 		\n\tCipher: {}\n\tKey: {}'.format(command, filename, host, port, cipher, key))
+
+
+	try:
+		handshake()
+	except ValueError:
+		raise NotImplementedError()
 
 	# handle command
 	if command == 'read':
@@ -165,7 +194,12 @@ def startClient(socket, command, filename, host, port, cipher, key):
 Main
 '''
 def Main():
+	global Globals
 	args = parseArguments()
+
+	# Setup globals
+	Globals['']
+
 	HOST, PORT = args.hostname_port.split(':')
 	# connect to server
 	s = socket.socket()
