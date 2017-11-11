@@ -12,7 +12,7 @@ import argparse
 from Crypto.Cipher import AES
 
 # globals
-BUFFER_SIZE = 32
+BUFFER_SIZE = 1024
 CIPHERS = {
 	'null': 'null',
 	'aes128': 'aes128',
@@ -47,7 +47,8 @@ def decrypt(data):
 	encryptor = AES.new(SESSION_KEY, AES.MODE_CBC, IV=iv)
 	# remove padding
 	data = encryptor.decrypt(data)
-	data = data[:-data[-1]]
+	if data != b'':
+		data = data[:-data[-1]]
 	return data
 
 '''
