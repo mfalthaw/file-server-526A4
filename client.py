@@ -15,6 +15,8 @@ import string
 from protocol import Protocol
 from errors import BadKeyError
 
+BUFFER_SIZE = 1024
+
 class Client(Protocol):
     __NONCE_LENGTH = 16
 
