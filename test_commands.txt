@@ -1,0 +1,101 @@
+Path: /home/profs/pfederl/Teaching/CPSC526/A4
+
+1KB.bin
+    aa07166d6436a3cfe0b7571c0f687ae7bf59ac5b57911d0d99fb02e012d7e914
+1MB.bin
+    cd2eb0837c9b4c962c22d2ff8b5441b7b45805887f051d39bf133b583baf6860
+1GB.bin
+    db045033cd7900d408556d23729e5a9eb844a21d570f7285a097fc98802d5371
+
+
+----------------------------------
+Timing Tests
+----------------------------------
+1KB
+----------------------------------
+    null
+    ----------------------------------
+    time ./bgen.py 1024 6 | python3 client.py read /home/profs/pfederl/Teaching/CPSC526/A4/1KB.bin \
+    127.0.0.1:8000 null 0000000000000001 | sha256sum
+
+    time ./bgen.py 1024 6 | python3 client.py write up_1KB.bin \
+    127.0.0.1:8000 null 0000000000000001 < /home/profs/pfederl/Teaching/CPSC526/A4/1KB.bin \
+    sha256sum up_1KB.bin
+    ----------------------------------
+    128
+    ----------------------------------
+    time ./bgen.py 1024 6 | python3 client.py read /home/profs/pfederl/Teaching/CPSC526/A4/1KB.bin \
+    127.0.0.1:8000 aes128 0000000000000001 | sha256sum
+
+    time ./bgen.py 1024 6 | python3 client.py write up_1KB.bin \
+    127.0.0.1:8000 aes128 0000000000000001 < /home/profs/pfederl/Teaching/CPSC526/A4/1KB.bin \
+    sha256sum up_1KB.bin
+    ----------------------------------
+    256
+    ----------------------------------
+    time ./bgen.py 1024 6 | python3 client.py read /home/profs/pfederl/Teaching/CPSC526/A4/1KB.bin \
+    127.0.0.1:8000 aes256 0000000000000001 | sha256sum
+
+    time ./bgen.py 1024 6 | python3 client.py write up_1KB.bin \
+    127.0.0.1:8000 aes256 0000000000000001 < /home/profs/pfederl/Teaching/CPSC526/A4/1KB.bin \
+    sha256sum up_1KB.bin
+
+----------------------------------
+1MB
+----------------------------------
+    null
+    ----------------------------------
+    time ./bgen.py 1024 6 | python3 client.py read /home/profs/pfederl/Teaching/CPSC526/A4/1MB.bin \
+    127.0.0.1:8000 null 0000000000000001 | sha256sum
+
+    time ./bgen.py 1024 6 | python3 client.py write up_1MB.bin \
+    127.0.0.1:8000 null 0000000000000001 < /home/profs/pfederl/Teaching/CPSC526/A4/1MB.bin \
+    sha256sum up_1MB.bin
+    ----------------------------------
+    128
+    ----------------------------------
+    time ./bgen.py 1024 6 | python3 client.py read /home/profs/pfederl/Teaching/CPSC526/A4/1MB.bin \
+    127.0.0.1:8000 aes128 0000000000000001 | sha256sum
+
+    time ./bgen.py 1024 6 | python3 client.py write up_1MB.bin \
+    127.0.0.1:8000 aes128 0000000000000001 < /home/profs/pfederl/Teaching/CPSC526/A4/1MB.bin \
+    sha256sum up_1MB.bin
+    ----------------------------------
+    256
+    ----------------------------------
+    time ./bgen.py 1024 6 | python3 client.py read /home/profs/pfederl/Teaching/CPSC526/A4/1MB.bin \
+    127.0.0.1:8000 aes256 0000000000000001 | sha256sum
+
+    time ./bgen.py 1024 6 | python3 client.py write up_1MB.bin \
+    127.0.0.1:8000 aes256 0000000000000001 < /home/profs/pfederl/Teaching/CPSC526/A4/1MB.bin \
+    sha256sum up_1MB.bin
+
+----------------------------------
+1GB
+----------------------------------
+    null
+    ----------------------------------
+    time ./bgen.py 1024 6 | python3 client.py read /home/profs/pfederl/Teaching/CPSC526/A4/1GB.bin \
+    127.0.0.1:8000 null 0000000000000001 | sha256sum
+
+    time ./bgen.py 1024 6 | python3 client.py write up_1GB.bin \
+    127.0.0.1:8000 null 0000000000000001 < /home/profs/pfederl/Teaching/CPSC526/A4/1GB.bin \
+    sha256sum up_1GB.bin
+    ----------------------------------
+    128
+    ----------------------------------
+    time ./bgen.py 1024 6 | python3 client.py read /home/profs/pfederl/Teaching/CPSC526/A4/1GB.bin \
+    127.0.0.1:8000 aes128 0000000000000001 | sha256sum
+
+    time ./bgen.py 1024 6 | python3 client.py write up_1GB.bin \
+    127.0.0.1:8000 aes128 0000000000000001 < /home/profs/pfederl/Teaching/CPSC526/A4/1GB.bin \
+    sha256sum up_1GB.bin
+    ----------------------------------
+    256
+    ----------------------------------
+    time ./bgen.py 1024 6 | python3 client.py read /home/profs/pfederl/Teaching/CPSC526/A4/1GB.bin \
+    127.0.0.1:8000 aes256 0000000000000001 | sha256sum
+
+    time ./bgen.py 1024 6 | python3 client.py write up_1GB.bin \
+    127.0.0.1:8000 aes256 0000000000000001 < /home/profs/pfederl/Teaching/CPSC526/A4/1GB.bin \
+    sha256sum up_1GB.bin

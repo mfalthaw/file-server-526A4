@@ -86,10 +86,9 @@ class ClientHandler(Protocol):
         # create a file
         file = open(fileName, 'wb')
         data = self.receive_data()
-        file.write(data)
         while data:
-            data = self.receive_data()
             file.write(data)
+            data = self.receive_data()
 
         print('Upload complete!', file=sys.stderr)
         file.close()

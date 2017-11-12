@@ -15,7 +15,7 @@ class Protocol:
     LENGTH_256 = 32
 
     __BLOCK_SIZE = 128
-    __DEBUG = True
+    __DEBUG = False
 
     CIPHERS = [
         AES128,
