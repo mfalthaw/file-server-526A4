@@ -1,6 +1,9 @@
 import hashlib
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import padding
+
+from errors import BadKeyError
 
 
 class Protocol:
@@ -9,6 +12,8 @@ class Protocol:
     NULL = 'null'
     LENGTH_128 = 16
     LENGTH_256 = 32
+
+    __BLOCK_SIZE = 128
     __DEBUG = True
 
     CIPHERS = [
@@ -32,8 +37,7 @@ class Protocol:
     def __init__(self, sock, secret):
         self.socket = sock
         self.secret = secret
-        self.session_key = None
-        self.init_vector = None
+        self.cipher = None
         self.send_message = None
         self.send_data = None
         self.receive_message = None
@@ -42,12 +46,13 @@ class Protocol:
     def init_utils(self, cipher_type, nonce):
         ''' Initialize various utilities used by class '''
         if cipher_type != Protocol.NULL:
-            self.session_key = Protocol.__session_key(self.secret, nonce, cipher_type)
-            self.init_vector = Protocol.__init_vector(self.secret, nonce)
-        self.send_message = lambda msg: Protocol.__send_message(self.socket, msg, cipher_type, self.session_key, nonce)
-        self.send_data = lambda data: Protocol.__send_data(self.socket, data, cipher_type, self.session_key, self.init_vector)
-        self.receive_data = lambda: Protocol.__receive_data(self.socket, cipher_type, self.session_key, self.init_vector)
-        self.receive_message = lambda: Protocol.__receive_message(self.socket, cipher_type, self.session_key, self.init_vector)
+            session_key = Protocol.__session_key(self.secret, nonce, cipher_type)
+            init_vector = Protocol.__init_vector(self.secret, nonce)
+            self.cipher = Protocol.__create_cipher(session_key, init_vector)
+        self.send_message = lambda msg: Protocol.__send_message(self.socket, msg, cipher_type, self.cipher)
+        self.send_data = lambda data: Protocol.__send_data(self.socket, data, cipher_type, self.cipher)
+        self.receive_data = lambda: Protocol.__receive_data(self.socket, cipher_type, self.cipher)
+        self.receive_message = lambda: Protocol.__receive_message(self.socket, cipher_type, self.cipher)
 
 
     def send_plain_message(self, msg):
@@ -111,61 +116,51 @@ class Protocol:
         return Protocol.__sha256_key(key, nonce, Protocol.__SESSION_KEY, length)
 
     @staticmethod
-    def __send_message(socket, msg, cipher_type, session_key=None, nonce=None):
+    def __send_message(socket, msg, cipher_type, cipher=None):
         ''' Send a message through a socket '''
         Protocol.log('Sending message: {}'.format(msg))
         data = msg.encode('utf-8')
-        Protocol.__send_data(socket, data, cipher_type, session_key, nonce)
+        Protocol.__send_data(socket, data, cipher_type, cipher)
 
     @staticmethod
-    def __send_data(socket, data, cipher_type, session_key=None, init_vector=None):
+    def __send_data(socket, data, cipher_type, cipher=None):
         ''' Send data through a socket '''
-        Protocol.__validate_messenger(cipher_type, session_key, init_vector)
+        Protocol.__validate_messenger(cipher_type, cipher)
 
         if len(data) > Protocol.__BUFFER_SIZE:
             raise ValueError('Attempting to send too much data')
 
-        socket.send(Protocol.__encrypt(data, cipher_type, session_key, init_vector))
+        socket.send(Protocol.__encrypt(data, cipher_type, cipher))
 
     @staticmethod
-    def __receive_data(socket, cipher_type, session_key=None, init_vector=None):
+    def __receive_data(socket, cipher_type, cipher=None):
         ''' Receive data through a socket '''
-        Protocol.__validate_messenger(cipher_type, session_key, init_vector)
-        while True:
-            ct = socket.recv(Protocol.__BUFFER_SIZE)
-            if not ct:
-                continue
-            msg = Protocol.__decrypt(ct, cipher_type, session_key, init_vector).decode('utf-8')
-            if not msg  or msg == 'None':
-                continue
+        Protocol.__validate_messenger(cipher_type, cipher)
 
-            break
+        ct = socket.recv(Protocol.__BUFFER_SIZE)
+        msg = Protocol.__decrypt(ct, cipher_type, cipher)
+
         return msg
 
     @staticmethod
-    def __receive_message(socket, cipher_type, session_key=None, init_vector=None):
+    def __receive_message(socket, cipher_type, cipher=None):
         ''' Receive a message '''
-        Protocol.__validate_messenger(cipher_type, session_key, init_vector)
-        while True:
-            ct = socket.recv(Protocol.__BUFFER_SIZE)
-            if not ct:
-                continue
-            msg = Protocol.__decrypt(ct, cipher_type, session_key, init_vector).decode('utf-8')
-            if not msg  or msg == 'None':
-                continue
+        Protocol.__validate_messenger(cipher_type, cipher)
 
-            break
+        ct = socket.recv(Protocol.__BUFFER_SIZE)
+        msg = Protocol.__decrypt(ct, cipher_type, cipher).decode('utf-8')
+
         Protocol.log('Message received: {}'.format(msg))
         return str(msg)
 
 
     @staticmethod
-    def __validate_messenger(cipher_type, session_key, init_vector):
+    def __validate_messenger(cipher_type, cipher):
         ''' Validate args to send/receive '''
         if cipher_type not in Protocol.CIPHERS:
             raise ValueError('No such cipher: {}'.format(cipher_type))
 
-        if cipher_type != Protocol.NULL and (not session_key or not init_vector):
+        if cipher_type != Protocol.NULL and not cipher:
             raise ValueError('secret and nonce must be defined')
 
     @staticmethod
@@ -178,26 +173,31 @@ class Protocol:
         return m.digest()[:length]
 
     @staticmethod
-    def __encrypt(data, cipher_type, session_key, init_vector):
+    def __encrypt(data, cipher_type, cipher):
         ''' Encryption utliity '''
         if cipher_type == Protocol.NULL:
             return data
 
-        cipher = Protocol.__create_cipher(session_key, init_vector)
+        # pad data
+        padded_data = Protocol.__pad(data, Protocol.__BLOCK_SIZE)
+
         encryptor = cipher.encryptor()
 
-        return encryptor.update(data) + encryptor.finalize()
+        return encryptor.update(padded_data) + encryptor.finalize()
 
     @staticmethod
-    def __decrypt(payload, cipher_type, session_key, init_vector):
+    def __decrypt(payload, cipher_type, cipher):
         ''' Decryption utility '''
         if cipher_type == Protocol.NULL:
             return payload
 
-        cipher = Protocol.__create_cipher(session_key, init_vector)
         decryptor = cipher.decryptor()
 
-        return decryptor.update(payload) + decryptor.finalize()
+        padded_data = decryptor.update(payload) + decryptor.finalize()
+        try:
+            return Protocol.__unpad(padded_data, Protocol.__BLOCK_SIZE)
+        except ValueError:
+            raise BadKeyError()
 
     @staticmethod
     def __create_cipher(session_key, init_vector):
@@ -206,3 +206,13 @@ class Protocol:
         mode = modes.CBC(init_vector)
         backend = default_backend()
         return Cipher(algorithm, mode, backend=backend)
+
+    @staticmethod
+    def __pad(payload, block_size):
+        padder = padding.PKCS7(block_size).padder()
+        return padder.update(payload) + padder.finalize()
+
+    @staticmethod
+    def __unpad(payload, block_size):
+        unpadder = padding.PKCS7(block_size).unpadder()
+        return unpadder.update(payload) + unpadder.finalize()

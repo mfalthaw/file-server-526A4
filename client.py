@@ -10,6 +10,7 @@ import random
 import string
 
 from protocol import Protocol
+from errors import BadKeyError
 
 
 class Client(Protocol):
@@ -56,9 +57,9 @@ class Client(Protocol):
 def upload(sock, file_name):
     ''' Handles uploading files to server '''
     send_message(sock, 'upload')
-    ack = receieve_message(sock)  # needed this to run on lab compute
+    ack = receieve_message(sock)  # needed this to run on lab computer
     send_message(sock, file_name)
-    ack = receieve_message(sock)  # needed this to run on lab compute
+    ack = receieve_message(sock)  # needed this to run on lab computer
 
     bytes_to_send = sys.stdin.buffer.read(BUFFER_SIZE)
     send_data(sock, bytes_to_send)
@@ -174,24 +175,27 @@ def parse_args():
 
 
 
-def Main():
+def main():
     ''' Main '''
-    global GLOBALS
     args = parse_args()
 
     host, port = args.hostname_port.split(':')
 
     # connect to server
-    s = socket.socket()
-    s.connect((host, int(port)))
+    conn = socket.socket()
+    conn.connect((host, int(port)))
 
     # start client progtam
-    client = Client(s, args.key, args.cipher)
-    client.handshake()
+    client = Client(conn, args.key, args.cipher)
+    try:
+        client.handshake()
+    except BadKeyError:
+        Protocol.log('invalid key used')
 
     # close socket
-    s.close()
+    Protocol.log('Disconnecting from server')
+    conn.close()
 
 
 if __name__ == '__main__':
-    Main()
+    main()

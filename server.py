@@ -7,6 +7,7 @@ import os
 import argparse
 
 from protocol import Protocol
+from errors import BadKeyError
 
 # Constants
 HOST = '127.0.0.1'
@@ -51,42 +52,26 @@ def sendMsg(sock, msg, protocol):
     sock.send(msg.encode('utf-8'))
 
 
-'''
-Handles sending data to client
-'''
-
-
 def sendData(sock, data):
+    ''' Handles sending data to client '''
     sock.send(data)
 
 
-'''
-Handles receiving messages from client
-'''
-
-
 def recvMsg(sock):
+    ''' Handles receiving messages from client '''
     msg = sock.recv(BUFFER_SIZE).decode('utf-8')
     if DEBUG:
         print('Recvd: ' + msg)
     return msg
 
 
-'''
-Handles receiving data from client
-'''
-
-
 def recvData(sock):
+    ''' Handles receiving data from client '''
     return sock.recv(BUFFER_SIZE)
 
 
-'''
-Handles receiving files from client
-'''
-
-
 def receiveFile(sock):
+    ''' Handles receiving files from client '''
     fileName = recvMsg(sock)
     sendMsg(sock, 'ok')  # needed this to run on lab computers
     print('File Name received: {}'.format(fileName))
@@ -105,12 +90,8 @@ def receiveFile(sock):
     return
 
 
-'''
-Handles sending files to client
-'''
-
-
 def sendFile(sock):
+    ''' Handles sending files to client '''
     fileName = recvMsg(sock)
 
     print('File Name received: {}'.format(fileName))
@@ -190,7 +171,10 @@ def main():
         conn, addr = s.accept()
         addr = str(addr)
         print('{}: New connection from: {}'.format(datetime.now().strftime('%H:%M:%S'), addr))
-        Protocol.log(handle_client(conn, args.key))
+        try:
+            Protocol.log(handle_client(conn, args.key))
+        except BadKeyError:
+            Protocol.log('Invalid encryption key used, closing connection')
 
         # close connection
         Protocol.log('closed connection!')
