@@ -95,81 +95,6 @@ class ClientHandler(Protocol):
         file.close()
         return
 
-def sendMsg(sock, msg, protocol):
-    ''' Handles sending messages to client '''
-    if DEBUG:
-        print('protocol: {}'.format(protocol))
-        print('message: {}'.format(msg))
-
-    if not protocol:
-        raise ValueError('should have specified a protocol')
-
-    sock.send(msg.encode('utf-8'))
-
-
-def sendData(sock, data):
-    ''' Handles sending data to client '''
-    sock.send(data)
-
-
-def recvMsg(sock):
-    ''' Handles receiving messages from client '''
-    msg = sock.recv(BUFFER_SIZE).decode('utf-8')
-    if DEBUG:
-        print('Recvd: ' + msg)
-    return msg
-
-
-def recvData(sock):
-    ''' Handles receiving data from client '''
-    return sock.recv(BUFFER_SIZE)
-
-
-def receiveFile(sock):
-    ''' Handles receiving files from client '''
-    fileName = recvMsg(sock)
-    sendMsg(sock, 'ok')  # needed this to run on lab computers
-    print('File Name received: {}'.format(fileName))
-
-	# create a file
-    file = open(fileName, 'wb')
-    data = recvData(sock)
-    file.write(data)
-    while data:
-        data = recvData(sock)
-        file.write(data)
-
-    print('Upload complete!', file=sys.stderr)
-    file.close()
-    return
-
-
-def sendFile(sock):
-    ''' Handles sending files to client '''
-    fileName = recvMsg(sock)
-
-    print('File Name received: {}'.format(fileName))
-    if os.path.isfile(fileName):
-        sendMsg(sock, 'File Found!')
-        ack = recvMsg(sock)  # needed this to run on lab computers
-
-        # start sending file
-        with open(fileName, 'rb') as file:
-
-            bytesToSend = file.read(BUFFER_SIZE)
-            while bytesToSend:
-                sendData(sock, bytesToSend)
-                bytesToSend = file.read(BUFFER_SIZE)
-
-            print('File transfer completed!', file=sys.stderr)
-            file.close()
-            return
-
-    # file not found
-    else:
-        sendMsg(sock, "Fail! Can't find: {}".format(fileName))
-        ack = recvMsg(sock)  # needed this to run on lab computers
-        return
 
 def parse_args():
     '''
@@ -179,17 +104,14 @@ def parse_args():
 
     usage = 'python3 server.py port key'
     parser = argparse.ArgumentParser(usage=usage)
-
     # arugments to be parsed
     parser.add_argument('port', type=int, help='port to listen on')
-
     parser.add_argument('key', type=str, help='The key parameter specifies a secret key \
     that must match the server’s secret key. This key will be also used to derive both \
     the session keys and the initialization vectors.')
 
     # parse arguments
     args = parser.parse_args()
-
     # return arguments to main
     return args
 
