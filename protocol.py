@@ -1,4 +1,5 @@
 import hashlib
+import sys
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
@@ -91,7 +92,7 @@ class Protocol:
     def log(msg):
         ''' Log a debug message '''
         if Protocol.__DEBUG:
-            print(msg)
+            print(msg, file=sys.stderr)
 
     @staticmethod
     def __init_vector(key, nonce):
@@ -214,5 +215,6 @@ class Protocol:
 
     @staticmethod
     def __unpad(payload, block_size):
-        unpadder = padding.PKCS7(block_size).unpadder()
-        return unpadder.update(payload) + unpadder.finalize()
+        if payload != b'':
+            unpadder = padding.PKCS7(block_size).unpadder()
+            return unpadder.update(payload) + unpadder.finalize()
