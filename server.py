@@ -7,6 +7,7 @@ import binascii
 import sys
 import os
 import argparse
+import uuid
 
 from protocol import Protocol
 from errors import BadKeyError
@@ -24,10 +25,11 @@ class ClientHandler(Protocol):
         msg = super(ClientHandler, self).get_plain_message()
         cipher_type, nonce = msg.split(',')
         super(ClientHandler, self).init_utils(cipher_type, nonce)
-        super(ClientHandler, self).send_ack(Protocol.OK_ACK)
+        challenge = self.build_challenge()
+        self.send_message(challenge)
 
         # Perform authentication, receive challenge
-        expected_hash = super(ClientHandler, self).challenge()
+        expected_hash = super(ClientHandler, self).hash_challenge(challenge)
         actual_hash = self.receive_message()
         if expected_hash != actual_hash:
             # Failed, the keys do not match
@@ -92,6 +94,10 @@ class ClientHandler(Protocol):
         Protocol.log('Upload complete!')
         file.close()
         return
+
+    def build_challenge(self):
+        ''' Create a random string for challenge '''
+        return str(uuid.uuid4())
 
 
 def parse_args():

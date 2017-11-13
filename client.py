@@ -25,10 +25,11 @@ class Client(Protocol):
         ''' Perform the handshake with the server '''
         # Send the cipher and nonce
         super(Client, self).send_plain_message('{0},{1}'.format(self.cipher_type, self.nonce))
-        super(Client, self).rec_ack()
+        challenge = self.receive_message()
 
         # Perform authentication
-        self.send_message(self.challenge())
+        hash_challenge = super(Client, self).hash_challenge(challenge)
+        self.send_message(hash_challenge)
         super(Client, self).rec_ack()
 
         # Handshake successful
@@ -147,17 +148,18 @@ def main():
     client = Client(conn, args.key, args.cipher)
     try:
         client.handshake()
+
+        # handle command
+        command = args.command
+        if command == 'read':
+            client.download(args.filename)
+        elif command == 'write':
+            client.upload(args.filename)
+        else:
+            Protocol.log('Unsupported command')
+
     except BadKeyError:
         Protocol.log('invalid key used')
-
-    # handle command
-    command = args.command
-    if command == 'read':
-        client.download(args.filename)
-    elif command == 'write':
-        client.upload(args.filename)
-    else:
-        Protocol.log('Unsupported command')
 
     # close socket
     Protocol.log('Disconnecting from server')

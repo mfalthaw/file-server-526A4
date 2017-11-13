@@ -78,9 +78,10 @@ class Protocol:
         ''' Send an ACK '''
         self.send_message(ack_type)
 
-    def challenge(self):
+    def hash_challenge(self, challenge):
         ''' build the challenge '''
         m = hashlib.sha256()
+        m.update(challenge.encode('utf-8'))
         m.update(self.secret.encode('utf-8'))
         return str(m.hexdigest())
 
@@ -150,7 +151,11 @@ class Protocol:
         Protocol.__validate_messenger(cipher_type, cipher)
 
         ct = socket.recv(Protocol.BUFFER_SIZE)
-        msg = Protocol.__decrypt(ct, cipher_type, cipher).decode('utf-8')
+        msg = Protocol.__decrypt(ct, cipher_type, cipher)
+        if not msg:
+            raise BadKeyError()
+
+        msg = msg.decode('utf-8')
 
         Protocol.log('Message received: {}'.format(msg))
         return str(msg)
