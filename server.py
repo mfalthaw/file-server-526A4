@@ -1,8 +1,10 @@
 #!/usr/bin/env python
-# server.py
+''' server.py '''
 
 import socket
 from datetime import datetime
+import binascii
+import sys
 import os
 import argparse
 
@@ -39,86 +41,58 @@ class ClientHandler(Protocol):
         Protocol.log('handshake successful')
         return True
 
+    def handleTask(self):
+        ''' Handle client task '''
+        task = self.receive_message()
+        self.send_ack(Protocol.OK_ACK)
+        if task.lower() == 'upload':
+        	self.receiveFile()
+        elif task.lower() == 'download':
+        	self.sendFile()
+        else:
+        	self.send_message("Supported tasks: upload or download")
 
-def sendMsg(sock, msg, protocol):
-    ''' Handles sending messages to client '''
-    if DEBUG:
-        print('protocol: {}'.format(protocol))
-        print('message: {}'.format(msg))
+    def sendFile(self):
+        ''' Send a file to client '''
+        fileName = self.receive_message()
+        Protocol.log('File Name received: {}'.format(fileName))
+        if os.path.isfile(fileName):
+            self.send_message('File Found!')
+            self.rec_ack()
 
-    if not protocol:
-        raise ValueError('should have specified a protocol')
+    		# start sending file
+            with open(fileName, 'rb') as file:
+                bytesToSend = file.read(Protocol.BUFFER_SIZE-1)
+                while bytesToSend:
+                    self.send_data(bytesToSend)
+                    bytesToSend = file.read(Protocol.BUFFER_SIZE-1)
 
-    sock.send(msg.encode('utf-8'))
+                Protocol.log('File transfer completed!')
+                file.close()
 
-
-def sendData(sock, data):
-    ''' Handles sending data to client '''
-    sock.send(data)
-
-
-def recvMsg(sock):
-    ''' Handles receiving messages from client '''
-    msg = sock.recv(BUFFER_SIZE).decode('utf-8')
-    if DEBUG:
-        print('Recvd: ' + msg)
-    return msg
-
-
-def recvData(sock):
-    ''' Handles receiving data from client '''
-    return sock.recv(BUFFER_SIZE)
-
-
-def receiveFile(sock):
-    ''' Handles receiving files from client '''
-    fileName = recvMsg(sock)
-    sendMsg(sock, 'ok')  # needed this to run on lab computers
-    print('File Name received: {}'.format(fileName))
-
-    # create a file
-    file = open('UPLOADED_' + fileName, 'wb')
-    data = recvData(sock)
-    sendMsg(sock, 'ok')  # needed this to run on lab computers
-    file.write(data)
-    while data:
-        data = recvData(sock)
-        file.write(data)
-
-    print('Upload complete!')
-    file.close()
-    return
-
-
-def sendFile(sock):
-    ''' Handles sending files to client '''
-    fileName = recvMsg(sock)
-
-    print('File Name received: {}'.format(fileName))
-    if os.path.isfile(fileName):
-        sendMsg(sock, 'File Found!')
-        ack = recvMsg(sock)  # needed this to run on lab computers
-        fileSize = os.path.getsize(fileName)
-
-        # start sending file
-        with open(fileName, 'rb') as file:
-            bytesToSend = file.read(BUFFER_SIZE)
-            sendData(sock, bytesToSend)
-            ack = recvMsg(sock)  # needed this to run on lab computers
-
-            while bytesToSend:
-                bytesToSend = file.read(BUFFER_SIZE)
-                sendData(sock, bytesToSend)
-
-            print('File transfer completed!')
-            file.close()
-            return
-
-    # file not found
-    else:
-        sendMsg(sock, "Fail! Can't find: {}".format(fileName))
-        ack = recvMsg(sock)  # needed this to run on lab computers
+    	# file not found
+        else:
+            self.send_message("Fail! Can't find: {}".format(fileName))
+            self.rec_ack()
         return
+
+    def receiveFile(self):
+        ''' Receive a file from client '''
+        fileName = self.receive_message()
+        self.send_ack(Protocol.OK_ACK)
+        Protocol.log('File Name received: {}'.format(fileName))
+
+        # create a file
+        file = open(fileName, 'wb')
+        data = self.receive_data()
+        while data:
+            file.write(data)
+            data = self.receive_data()
+
+        Protocol.log('Upload complete!')
+        file.close()
+        return
+
 
 def parse_args():
     '''
@@ -128,17 +102,14 @@ def parse_args():
 
     usage = 'python3 server.py port key'
     parser = argparse.ArgumentParser(usage=usage)
-
     # arugments to be parsed
     parser.add_argument('port', type=int, help='port to listen on')
-
     parser.add_argument('key', type=str, help='The key parameter specifies a secret key \
     that must match the server’s secret key. This key will be also used to derive both \
     the session keys and the initialization vectors.')
 
     # parse arguments
     args = parser.parse_args()
-
     # return arguments to main
     return args
 
@@ -148,9 +119,11 @@ def handle_client(sock, secret):
     client_handler = ClientHandler(sock, secret)
     if not client_handler.handshake():
         return 'Failed handshake'
+    Protocol.log('Passed handshake')
 
-    return 'Passed handshake'
-
+    # hanle client task
+    client_handler.handleTask()
+    return
 
 def main():
     ''' Main function '''
@@ -166,13 +139,15 @@ def main():
     s.bind((HOST, args.port))
     s.listen(5)
 
-    print('Server started! Listening on {}:{}...'.format(str(HOST), str(args.port)))
+
+    Protocol.log('Listening on {}:{}'.format(str(HOST), str(args.port)))
+    Protocol.log('Using secret key: {}'.format(args.key))
     while True:
         conn, addr = s.accept()
         addr = str(addr)
-        print('{}: New connection from: {}'.format(datetime.now().strftime('%H:%M:%S'), addr))
+        Protocol.log('{}: New connection from: {}'.format(datetime.now().strftime('%H:%M:%S'), addr))
         try:
-            Protocol.log(handle_client(conn, args.key))
+            handle_client(conn, args.key)
         except BadKeyError:
             Protocol.log('Invalid encryption key used, closing connection')
 

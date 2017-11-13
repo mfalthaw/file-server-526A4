@@ -1,4 +1,6 @@
 import hashlib
+from datetime import datetime
+import sys
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
@@ -24,7 +26,7 @@ class Protocol:
 
     __INITIALIZATION_VECTOR = 'IV'
     __SESSION_KEY = 'SK'
-    __BUFFER_SIZE = 1024
+    BUFFER_SIZE = 1024
 
     # ACK Types
     OK_ACK = 'OK'
@@ -91,7 +93,7 @@ class Protocol:
     def log(msg):
         ''' Log a debug message '''
         if Protocol.__DEBUG:
-            print(msg)
+            print('{}: {}'.format(datetime.now().strftime('%H:%M:%S'), msg), file=sys.stderr)
 
     @staticmethod
     def __init_vector(key, nonce):
@@ -127,7 +129,7 @@ class Protocol:
         ''' Send data through a socket '''
         Protocol.__validate_messenger(cipher_type, cipher)
 
-        if len(data) > Protocol.__BUFFER_SIZE:
+        if len(data) > Protocol.BUFFER_SIZE:
             raise ValueError('Attempting to send too much data')
 
         socket.send(Protocol.__encrypt(data, cipher_type, cipher))
@@ -137,7 +139,7 @@ class Protocol:
         ''' Receive data through a socket '''
         Protocol.__validate_messenger(cipher_type, cipher)
 
-        ct = socket.recv(Protocol.__BUFFER_SIZE)
+        ct = socket.recv(Protocol.BUFFER_SIZE)
         msg = Protocol.__decrypt(ct, cipher_type, cipher)
 
         return msg
@@ -147,7 +149,7 @@ class Protocol:
         ''' Receive a message '''
         Protocol.__validate_messenger(cipher_type, cipher)
 
-        ct = socket.recv(Protocol.__BUFFER_SIZE)
+        ct = socket.recv(Protocol.BUFFER_SIZE)
         msg = Protocol.__decrypt(ct, cipher_type, cipher).decode('utf-8')
 
         Protocol.log('Message received: {}'.format(msg))
@@ -214,5 +216,6 @@ class Protocol:
 
     @staticmethod
     def __unpad(payload, block_size):
-        unpadder = padding.PKCS7(block_size).unpadder()
-        return unpadder.update(payload) + unpadder.finalize()
+        if payload != b'':
+            unpadder = padding.PKCS7(block_size).unpadder()
+            return unpadder.update(payload) + unpadder.finalize()

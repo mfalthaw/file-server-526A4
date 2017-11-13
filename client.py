@@ -1,17 +1,16 @@
 #!/usr/bin/env python
-
 ''' client.py '''
 
-
-import sys
 import socket
+from datetime import datetime
+import sys
+import os
 import argparse
 import random
 import string
 
 from protocol import Protocol
 from errors import BadKeyError
-
 
 class Client(Protocol):
     __NONCE_LENGTH = 16
@@ -21,7 +20,6 @@ class Client(Protocol):
         self.cipher_type = cipher_type
         self.nonce = Client.__generate_nonce()
         super(Client, self).init_utils(cipher_type, self.nonce)
-
 
     def handshake(self):
         ''' Perform the handshake with the server '''
@@ -39,85 +37,46 @@ class Client(Protocol):
 
     def download(self, filename):
         ''' Download file from server '''
-        raise NotImplementedError()
+        self.send_message('download')
+        self.rec_ack()
+        self.send_message(filename)
+        msg = self.receive_message()
+        self.send_ack(Protocol.OK_ACK)
+
+    	# file found
+        if not msg.startswith('Fail!'):
+
+            data = self.receive_data()
+            while data:
+                sys.stdout.buffer.write(data)
+                data = self.receive_data()
+            Protocol.log('Download complete!')
+            return
+
+    	# if file not found
+        else:
+            Protocol.log("File doesn't exist!")
 
     def upload(self, filename):
         ''' Upload file to server '''
-        raise NotImplementedError()
+        self.send_message('upload')
+        self.rec_ack()
+        self.send_message(filename)
+        self.rec_ack()
 
+        bytesToSend = sys.stdin.buffer.read(Protocol.BUFFER_SIZE-1)
+        while bytesToSend:
+            self.send_data(bytesToSend)
+            bytesToSend = sys.stdin.buffer.read(Protocol.BUFFER_SIZE-1)
 
+        Protocol.log('Upload complete!')
+        return
 
     @staticmethod
     def __generate_nonce():
         ''' Generate a random nonce to send to the server '''
         return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(Client.__NONCE_LENGTH))
 
-
-
-def upload(sock, file_name):
-    ''' Handles uploading files to server '''
-    send_message(sock, 'upload')
-    ack = receieve_message(sock)  # needed this to run on lab computer
-    send_message(sock, file_name)
-    ack = receieve_message(sock)  # needed this to run on lab computer
-
-    bytes_to_send = sys.stdin.buffer.read(BUFFER_SIZE)
-    send_data(sock, bytes_to_send)
-    while bytes_to_send:
-        bytes_to_send = sys.stdin.buffer.read(BUFFER_SIZE)
-        send_data(sock, bytes_to_send)
-
-    print('Upload complete!', file=sys.stderr)
-    return
-
-
-
-def download(sock, file_name):
-    ''' Handles downloading files from server '''
-    send_message(sock, 'download')
-    ack = receieve_message(sock)  # needed this to run on lab computers
-    send_message(sock, file_name)
-    msg = receieve_message(sock)
-    send_message(sock, 'ok')  # needed this to run on lab computers
-
-    # file found
-    if not msg.startswith('Fail!'):
-        data = receive_data(sock)
-        send_message(sock, 'ok')  # needed this to run on lab computers
-        print('\n')
-        sys.stdout.buffer.write(data)
-
-        while data:
-            data = receive_data(sock)
-            sys.stdout.buffer.write(data)
-        print('\n')
-        print('Download complete!', file=sys.stderr)
-        sock.close()
-
-    # if file not found
-    else:
-        print("File doesn't exist!", file=sys.stderr)
-
-
-def startClient(sock, command, filename, host, port, cipher, key):
-    ''' Handles starting the client program '''
-    if DEBUG:
-        # confirm connection success with specified arguments
-        print('Client started!\n\tCommand: {}\n\tFile Name: {}\n\tHost: {}\n\tPort: {}\
-		\n\tCipher: {}\n\tKey: {}'.format(command, filename, host, port, cipher, key))
-
-    try:
-        handshake()
-    except ValueError:
-        raise NotImplementedError()
-
-    # handle command
-    if command == 'read':
-        download(sock, filename)
-    elif command == 'write':
-        upload(sock, filename)
-    else:
-        print('Unsupported command', file=sys.stderr)
 
 def parse_args():
     '''
@@ -154,25 +113,24 @@ def parse_args():
 
     # error checking
     if args.command not in ('read', 'write'):
-        print("Error, client only supports 'read' or 'write'")
+        Protocol.log("Error, client only supports 'read' or 'write'")
         parser.exit('Usage: ' + usage)
 
     if ':' not in args.hostname_port:
-        print('Error, format --> hostname:port')
+        Protocol.log('Error, format --> hostname:port')
         parser.exit('Usage: ' + usage)
 
     _, port = args.hostname_port.split(':')
     if int(port) not in range(0, 65536):
-        print('Error, port must be 0-65535')
+        Protocol.log('Error, port must be 0-65535')
         parser.exit('Usage: ' + usage)
 
     if args.cipher not in Protocol.CIPHERS:
-        print('Error, cipher must be: aes128, aes256, or null')
+        Protocol.log('Error, cipher must be: aes128, aes256, or null')
         parser.exit('Usage: {}'.format(usage))
 
     # return arguments to main
     return args
-
 
 
 def main():
@@ -185,12 +143,21 @@ def main():
     conn = socket.socket()
     conn.connect((host, int(port)))
 
-    # start client progtam
+    # start client program
     client = Client(conn, args.key, args.cipher)
     try:
         client.handshake()
     except BadKeyError:
         Protocol.log('invalid key used')
+
+    # handle command
+    command = args.command
+    if command == 'read':
+        client.download(args.filename)
+    elif command == 'write':
+        client.upload(args.filename)
+    else:
+        Protocol.log('Unsupported command')
 
     # close socket
     Protocol.log('Disconnecting from server')
