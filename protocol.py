@@ -25,7 +25,7 @@ class Protocol:
 
     __INITIALIZATION_VECTOR = 'IV'
     __SESSION_KEY = 'SK'
-    __BUFFER_SIZE = 1024
+    BUFFER_SIZE = 1024
 
     # ACK Types
     OK_ACK = 'OK'
@@ -128,7 +128,7 @@ class Protocol:
         ''' Send data through a socket '''
         Protocol.__validate_messenger(cipher_type, cipher)
 
-        if len(data) > Protocol.__BUFFER_SIZE:
+        if len(data) > Protocol.BUFFER_SIZE:
             raise ValueError('Attempting to send too much data')
 
         socket.send(Protocol.__encrypt(data, cipher_type, cipher))
@@ -138,7 +138,7 @@ class Protocol:
         ''' Receive data through a socket '''
         Protocol.__validate_messenger(cipher_type, cipher)
 
-        ct = socket.recv(Protocol.__BUFFER_SIZE)
+        ct = socket.recv(Protocol.BUFFER_SIZE)
         msg = Protocol.__decrypt(ct, cipher_type, cipher)
 
         return msg
@@ -148,7 +148,7 @@ class Protocol:
         ''' Receive a message '''
         Protocol.__validate_messenger(cipher_type, cipher)
 
-        ct = socket.recv(Protocol.__BUFFER_SIZE)
+        ct = socket.recv(Protocol.BUFFER_SIZE)
         msg = Protocol.__decrypt(ct, cipher_type, cipher).decode('utf-8')
 
         Protocol.log('Message received: {}'.format(msg))

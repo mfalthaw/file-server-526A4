@@ -13,7 +13,6 @@ from errors import BadKeyError
 
 # Constants
 HOST = '127.0.0.1'
-BUFFER_SIZE = 1024
 
 
 class ClientHandler(Protocol):
@@ -45,13 +44,13 @@ class ClientHandler(Protocol):
     def handleTask(self):
         ''' Handle client task '''
         task = self.receive_message()
-        self.send_message('ok') # needed this to run on lab computers
+        self.send_ack(Protocol.OK_ACK)
         if task.lower() == 'upload':
         	self.receiveFile()
         elif task.lower() == 'download':
         	self.sendFile()
         else:
-        	sendMsg(sock, "Supported tasks: upload or download")
+        	self.send_message("Supported tasks: upload or download")
 
     def sendFile(self):
         ''' Send a file to client '''
@@ -59,14 +58,14 @@ class ClientHandler(Protocol):
         print('File Name received: {}'.format(fileName), file=sys.stderr)
         if os.path.isfile(fileName):
             self.send_message('File Found!')
-            ack = self.receive_message() # needed this to run on lab computers
+            self.rec_ack()
 
     		# start sending file
             with open(fileName, 'rb') as file:
-                bytesToSend = file.read(BUFFER_SIZE-1)
+                bytesToSend = file.read(Protocol.BUFFER_SIZE-1)
                 while bytesToSend:
                     self.send_data(bytesToSend)
-                    bytesToSend = file.read(BUFFER_SIZE-1)
+                    bytesToSend = file.read(Protocol.BUFFER_SIZE-1)
 
                 print('File transfer completed!', file=sys.stderr)
                 file.close()
@@ -74,13 +73,13 @@ class ClientHandler(Protocol):
     	# file not found
         else:
             self.send_message("Fail! Can't find: {}".format(fileName))
-            ack = self.receive_message() # needed this to run on lab computers
+            self.rec_ack()
         return
 
     def receiveFile(self):
         ''' Receive a file from client '''
         fileName = self.receive_message()
-        self.send_message('ok') # needed this to run on lab computers
+        self.send_ack(Protocol.OK_ACK)
         print('File Name received: {}'.format(fileName), file=sys.stderr)
 
         # create a file

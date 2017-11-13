@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 ''' client.py '''
 
-import sys
 import socket
-import hashlib
 from datetime import datetime
-import binascii
 import sys
 import os
 import argparse
@@ -14,8 +11,6 @@ import string
 
 from protocol import Protocol
 from errors import BadKeyError
-
-BUFFER_SIZE = 1024
 
 class Client(Protocol):
     __NONCE_LENGTH = 16
@@ -43,10 +38,10 @@ class Client(Protocol):
     def download(self, filename):
         ''' Download file from server '''
         self.send_message('download')
-        ack = self.receive_message() # needed this to run on lab computers
+        self.rec_ack()
         self.send_message(filename)
         msg = self.receive_message()
-        self.send_message('ok') # needed this to run on lab computers
+        self.send_ack(Protocol.OK_ACK)
 
     	# file found
         if not msg.startswith('Fail!'):
@@ -65,14 +60,14 @@ class Client(Protocol):
     def upload(self, filename):
         ''' Upload file to server '''
         self.send_message('upload')
-        ack = self.receive_message() # needed this to run on lab compute
+        self.rec_ack()
         self.send_message(filename)
-        ack = self.receive_message() # needed this to run on lab compute
+        self.rec_ack()
 
-        bytesToSend = sys.stdin.buffer.read(BUFFER_SIZE-1)
+        bytesToSend = sys.stdin.buffer.read(Protocol.BUFFER_SIZE-1)
         while bytesToSend:
             self.send_data(bytesToSend)
-            bytesToSend = sys.stdin.buffer.read(BUFFER_SIZE-1)
+            bytesToSend = sys.stdin.buffer.read(Protocol.BUFFER_SIZE-1)
 
         print('Upload complete!', file=sys.stderr)
         return
