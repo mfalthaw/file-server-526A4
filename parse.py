@@ -29,6 +29,6 @@ for line in lines:
 		time = time.replace('s', '')
 		temp.append(float(float(time)+min))
 		if len(temp) == 10:
-			avg = float(sum(temp))/float(len(temp))
-			print(str(avg) + ' seconds')
+			avg = float(temp[4]+temp[5])/float(2)
+			print(str(avg))
 			temp = []
