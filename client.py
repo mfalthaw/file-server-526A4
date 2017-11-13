@@ -50,12 +50,12 @@ class Client(Protocol):
             while data:
                 sys.stdout.buffer.write(data)
                 data = self.receive_data()
-            print('Download complete!', file=sys.stderr)
+            Protocol.log('Download complete!')
             return
 
     	# if file not found
         else:
-            print("File doesn't exist!", file=sys.stderr)
+            Protocol.log("File doesn't exist!")
 
     def upload(self, filename):
         ''' Upload file to server '''
@@ -69,7 +69,7 @@ class Client(Protocol):
             self.send_data(bytesToSend)
             bytesToSend = sys.stdin.buffer.read(Protocol.BUFFER_SIZE-1)
 
-        print('Upload complete!', file=sys.stderr)
+        Protocol.log('Upload complete!')
         return
 
     @staticmethod
@@ -113,20 +113,20 @@ def parse_args():
 
     # error checking
     if args.command not in ('read', 'write'):
-        print("Error, client only supports 'read' or 'write'")
+        Protocol.log("Error, client only supports 'read' or 'write'")
         parser.exit('Usage: ' + usage)
 
     if ':' not in args.hostname_port:
-        print('Error, format --> hostname:port')
+        Protocol.log('Error, format --> hostname:port')
         parser.exit('Usage: ' + usage)
 
     _, port = args.hostname_port.split(':')
     if int(port) not in range(0, 65536):
-        print('Error, port must be 0-65535')
+        Protocol.log('Error, port must be 0-65535')
         parser.exit('Usage: ' + usage)
 
     if args.cipher not in Protocol.CIPHERS:
-        print('Error, cipher must be: aes128, aes256, or null')
+        Protocol.log('Error, cipher must be: aes128, aes256, or null')
         parser.exit('Usage: {}'.format(usage))
 
     # return arguments to main
@@ -157,7 +157,7 @@ def main():
     elif command == 'write':
         client.upload(args.filename)
     else:
-        print('Unsupported command', file=sys.stderr)
+        Protocol.log('Unsupported command')
 
     # close socket
     Protocol.log('Disconnecting from server')

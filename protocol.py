@@ -1,4 +1,5 @@
 import hashlib
+from datetime import datetime
 import sys
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
@@ -15,7 +16,7 @@ class Protocol:
     LENGTH_256 = 32
 
     __BLOCK_SIZE = 128
-    __DEBUG = False
+    __DEBUG = True
 
     CIPHERS = [
         AES128,
@@ -92,7 +93,7 @@ class Protocol:
     def log(msg):
         ''' Log a debug message '''
         if Protocol.__DEBUG:
-            print(msg, file=sys.stderr)
+            print('{}: {}'.format(datetime.now().strftime('%H:%M:%S'), msg), file=sys.stderr)
 
     @staticmethod
     def __init_vector(key, nonce):

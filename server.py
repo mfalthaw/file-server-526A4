@@ -55,7 +55,7 @@ class ClientHandler(Protocol):
     def sendFile(self):
         ''' Send a file to client '''
         fileName = self.receive_message()
-        print('File Name received: {}'.format(fileName), file=sys.stderr)
+        Protocol.log('File Name received: {}'.format(fileName))
         if os.path.isfile(fileName):
             self.send_message('File Found!')
             self.rec_ack()
@@ -67,7 +67,7 @@ class ClientHandler(Protocol):
                     self.send_data(bytesToSend)
                     bytesToSend = file.read(Protocol.BUFFER_SIZE-1)
 
-                print('File transfer completed!', file=sys.stderr)
+                Protocol.log('File transfer completed!')
                 file.close()
 
     	# file not found
@@ -80,7 +80,7 @@ class ClientHandler(Protocol):
         ''' Receive a file from client '''
         fileName = self.receive_message()
         self.send_ack(Protocol.OK_ACK)
-        print('File Name received: {}'.format(fileName), file=sys.stderr)
+        Protocol.log('File Name received: {}'.format(fileName))
 
         # create a file
         file = open(fileName, 'wb')
@@ -89,7 +89,7 @@ class ClientHandler(Protocol):
             file.write(data)
             data = self.receive_data()
 
-        print('Upload complete!', file=sys.stderr)
+        Protocol.log('Upload complete!')
         file.close()
         return
 
@@ -139,11 +139,13 @@ def main():
     s.bind((HOST, args.port))
     s.listen(5)
 
-    print('Server started! Listening on {}:{}...'.format(str(HOST), str(args.port)))
+
+    Protocol.log('Listening on {}:{}'.format(str(HOST), str(args.port)))
+    Protocol.log('Using secret key: {}'.format(args.key))
     while True:
         conn, addr = s.accept()
         addr = str(addr)
-        print('{}: New connection from: {}'.format(datetime.now().strftime('%H:%M:%S'), addr))
+        Protocol.log('{}: New connection from: {}'.format(datetime.now().strftime('%H:%M:%S'), addr))
         try:
             handle_client(conn, args.key)
         except BadKeyError:
