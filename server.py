@@ -74,6 +74,7 @@ class ClientHandler(Protocol):
 
     	# file not found
         else:
+            Protocol.log('Error: file could not be read by the server.\n\t\tCan\'t find: {}'.format(fileName))
             self.send_message("Fail! Can't find: {}".format(fileName))
             self.rec_ack()
         return
