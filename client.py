@@ -114,20 +114,20 @@ def parse_args():
 
     # error checking
     if args.command not in ('read', 'write'):
-        Protocol.log("Error, client only supports 'read' or 'write'")
+        Protocol.log("Error: wrong command line arguments.\n\t\tclient only supports 'read' or 'write'")
         parser.exit('Usage: ' + usage)
 
     if ':' not in args.hostname_port:
-        Protocol.log('Error, format --> hostname:port')
+        Protocol.log('Error: wrong command line arguments.\n\t\tformat --> hostname:port')
         parser.exit('Usage: ' + usage)
 
     _, port = args.hostname_port.split(':')
     if int(port) not in range(0, 65536):
-        Protocol.log('Error, port must be 0-65535')
+        Protocol.log('Error: wrong command line arguments.\n\t\tport must be 0-65535')
         parser.exit('Usage: ' + usage)
 
     if args.cipher not in Protocol.CIPHERS:
-        Protocol.log('Error, cipher must be: aes128, aes256, or null')
+        Protocol.log('Error: wrong command line arguments.\n\t\tcipher must be: aes128, aes256, or null')
         parser.exit('Usage: {}'.format(usage))
 
     # return arguments to main
@@ -159,7 +159,7 @@ def main():
             Protocol.log('Unsupported command')
 
     except BadKeyError:
-        Protocol.log('invalid key used')
+        Protocol.log('Error: wrong key.\n\t\tinvalid key used')
 
     # close socket
     Protocol.log('Disconnecting from server')

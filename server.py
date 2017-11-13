@@ -116,6 +116,12 @@ def parse_args():
 
     # parse arguments
     args = parser.parse_args()
+    
+    # error checking
+    if int(args.port) not in range(0, 65536):
+        Protocol.log('Error: wrong command line arguments.\n\t\tport must be 0-65535')
+        parser.exit('Usage: ' + usage)
+
     # return arguments to main
     return args
 
@@ -155,7 +161,7 @@ def main():
     try:
         handle_client(conn, args.key)
     except BadKeyError:
-        Protocol.log('Invalid encryption key used, closing connection')
+        Protocol.log('Error: wrong key.\n\t\tInvalid encryption key used, closing connection')
 
     # close connection
     Protocol.log('closed connection!')
