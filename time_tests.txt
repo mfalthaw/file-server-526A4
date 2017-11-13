@@ -1,0 +1,738 @@
+size: 1024 cipher: null command: write
+real	0m0.080s
+user	0m0.058s
+sys	0m0.015s
+
+real	0m0.081s
+user	0m0.059s
+sys	0m0.016s
+
+real	0m0.084s
+user	0m0.061s
+sys	0m0.016s
+
+real	0m0.082s
+user	0m0.060s
+sys	0m0.015s
+
+real	0m0.081s
+user	0m0.059s
+sys	0m0.015s
+
+real	0m0.089s
+user	0m0.064s
+sys	0m0.017s
+
+real	0m0.080s
+user	0m0.059s
+sys	0m0.015s
+
+real	0m0.080s
+user	0m0.059s
+sys	0m0.016s
+
+real	0m0.082s
+user	0m0.060s
+sys	0m0.015s
+
+real	0m0.080s
+user	0m0.059s
+sys	0m0.015s
+
+size: 1024 cipher: null command: read
+real	0m0.084s
+user	0m0.075s
+sys	0m0.023s
+
+real	0m0.083s
+user	0m0.075s
+sys	0m0.020s
+
+real	0m0.082s
+user	0m0.074s
+sys	0m0.021s
+
+real	0m0.083s
+user	0m0.075s
+sys	0m0.020s
+
+real	0m0.082s
+user	0m0.075s
+sys	0m0.020s
+
+real	0m0.083s
+user	0m0.075s
+sys	0m0.020s
+
+real	0m0.082s
+user	0m0.074s
+sys	0m0.020s
+
+real	0m0.082s
+user	0m0.074s
+sys	0m0.020s
+
+real	0m0.083s
+user	0m0.075s
+sys	0m0.021s
+
+real	0m0.082s
+user	0m0.074s
+sys	0m0.020s
+
+size: 1024 cipher: aes128 command: write
+real	0m0.225s
+user	0m0.128s
+sys	0m0.026s
+
+real	0m0.219s
+user	0m0.132s
+sys	0m0.024s
+
+real	0m0.216s
+user	0m0.130s
+sys	0m0.024s
+
+real	0m0.214s
+user	0m0.127s
+sys	0m0.022s
+
+real	0m0.212s
+user	0m0.126s
+sys	0m0.022s
+
+real	0m0.214s
+user	0m0.127s
+sys	0m0.022s
+
+real	0m0.214s
+user	0m0.127s
+sys	0m0.022s
+
+real	0m0.214s
+user	0m0.127s
+sys	0m0.022s
+
+real	0m0.217s
+user	0m0.130s
+sys	0m0.023s
+
+real	0m0.214s
+user	0m0.127s
+sys	0m0.024s
+
+size: 1024 cipher: aes128 command: read
+real	0m0.218s
+user	0m0.144s
+sys	0m0.027s
+
+real	0m0.220s
+user	0m0.144s
+sys	0m0.028s
+
+real	0m0.218s
+user	0m0.144s
+sys	0m0.029s
+
+real	0m0.218s
+user	0m0.144s
+sys	0m0.028s
+
+real	0m0.216s
+user	0m0.143s
+sys	0m0.028s
+
+real	0m0.219s
+user	0m0.145s
+sys	0m0.029s
+
+real	0m0.216s
+user	0m0.143s
+sys	0m0.027s
+
+real	0m0.218s
+user	0m0.144s
+sys	0m0.029s
+
+real	0m0.216s
+user	0m0.143s
+sys	0m0.027s
+
+real	0m0.219s
+user	0m0.144s
+sys	0m0.028s
+
+size: 1024 cipher: aes256 command: write
+real	0m0.214s
+user	0m0.127s
+sys	0m0.022s
+
+real	0m0.215s
+user	0m0.128s
+sys	0m0.022s
+
+real	0m0.214s
+user	0m0.126s
+sys	0m0.022s
+
+real	0m0.214s
+user	0m0.127s
+sys	0m0.024s
+
+real	0m0.216s
+user	0m0.129s
+sys	0m0.023s
+
+real	0m0.218s
+user	0m0.127s
+sys	0m0.024s
+
+real	0m0.213s
+user	0m0.126s
+sys	0m0.024s
+
+real	0m0.215s
+user	0m0.128s
+sys	0m0.023s
+
+real	0m0.214s
+user	0m0.127s
+sys	0m0.024s
+
+real	0m0.215s
+user	0m0.128s
+sys	0m0.022s
+
+size: 1024 cipher: aes256 command: read
+real	0m0.225s
+user	0m0.150s
+sys	0m0.028s
+
+real	0m0.215s
+user	0m0.142s
+sys	0m0.027s
+
+real	0m0.215s
+user	0m0.143s
+sys	0m0.029s
+
+real	0m0.217s
+user	0m0.143s
+sys	0m0.029s
+
+real	0m0.222s
+user	0m0.147s
+sys	0m0.029s
+
+real	0m0.217s
+user	0m0.144s
+sys	0m0.029s
+
+real	0m0.218s
+user	0m0.144s
+sys	0m0.028s
+
+real	0m0.219s
+user	0m0.144s
+sys	0m0.029s
+
+real	0m0.219s
+user	0m0.143s
+sys	0m0.030s
+
+real	0m0.218s
+user	0m0.145s
+sys	0m0.028s
+
+size: 1048576 cipher: null command: write
+real	0m0.085s
+user	0m0.061s
+sys	0m0.017s
+
+real	0m0.086s
+user	0m0.061s
+sys	0m0.017s
+
+real	0m0.085s
+user	0m0.062s
+sys	0m0.017s
+
+real	0m0.086s
+user	0m0.062s
+sys	0m0.017s
+
+real	0m0.085s
+user	0m0.061s
+sys	0m0.017s
+
+real	0m0.086s
+user	0m0.062s
+sys	0m0.017s
+
+real	0m0.086s
+user	0m0.061s
+sys	0m0.017s
+
+real	0m0.086s
+user	0m0.062s
+sys	0m0.017s
+
+real	0m0.086s
+user	0m0.062s
+sys	0m0.017s
+
+real	0m0.085s
+user	0m0.061s
+sys	0m0.017s
+
+size: 1048576 cipher: null command: read
+real	0m0.088s
+user	0m0.082s
+sys	0m0.022s
+
+real	0m0.089s
+user	0m0.083s
+sys	0m0.022s
+
+real	0m0.089s
+user	0m0.084s
+sys	0m0.022s
+
+real	0m0.090s
+user	0m0.083s
+sys	0m0.022s
+
+real	0m0.089s
+user	0m0.082s
+sys	0m0.022s
+
+real	0m0.089s
+user	0m0.083s
+sys	0m0.022s
+
+real	0m0.090s
+user	0m0.083s
+sys	0m0.024s
+
+real	0m0.088s
+user	0m0.082s
+sys	0m0.022s
+
+real	0m0.089s
+user	0m0.083s
+sys	0m0.022s
+
+real	0m0.089s
+user	0m0.082s
+sys	0m0.022s
+
+size: 1048576 cipher: aes128 command: write
+real	0m0.269s
+user	0m0.174s
+sys	0m0.029s
+
+real	0m0.269s
+user	0m0.174s
+sys	0m0.029s
+
+real	0m0.272s
+user	0m0.175s
+sys	0m0.030s
+
+real	0m0.268s
+user	0m0.173s
+sys	0m0.031s
+
+real	0m0.269s
+user	0m0.175s
+sys	0m0.031s
+
+real	0m0.266s
+user	0m0.171s
+sys	0m0.029s
+
+real	0m0.269s
+user	0m0.173s
+sys	0m0.032s
+
+real	0m0.267s
+user	0m0.172s
+sys	0m0.029s
+
+real	0m0.267s
+user	0m0.173s
+sys	0m0.029s
+
+real	0m0.268s
+user	0m0.173s
+sys	0m0.031s
+
+size: 1048576 cipher: aes128 command: read
+real	0m0.271s
+user	0m0.197s
+sys	0m0.031s
+
+real	0m0.287s
+user	0m0.209s
+sys	0m0.033s
+
+real	0m0.310s
+user	0m0.213s
+sys	0m0.036s
+
+real	0m0.268s
+user	0m0.195s
+sys	0m0.032s
+
+real	0m0.268s
+user	0m0.195s
+sys	0m0.032s
+
+real	0m0.270s
+user	0m0.197s
+sys	0m0.032s
+
+real	0m0.268s
+user	0m0.195s
+sys	0m0.032s
+
+real	0m0.274s
+user	0m0.198s
+sys	0m0.033s
+
+real	0m0.271s
+user	0m0.197s
+sys	0m0.031s
+
+real	0m0.270s
+user	0m0.196s
+sys	0m0.031s
+
+size: 1048576 cipher: aes256 command: write
+real	0m0.268s
+user	0m0.173s
+sys	0m0.029s
+
+real	0m0.294s
+user	0m0.189s
+sys	0m0.034s
+
+real	0m0.268s
+user	0m0.173s
+sys	0m0.030s
+
+real	0m0.281s
+user	0m0.182s
+sys	0m0.033s
+
+real	0m0.278s
+user	0m0.179s
+sys	0m0.031s
+
+real	0m0.282s
+user	0m0.182s
+sys	0m0.033s
+
+real	0m0.274s
+user	0m0.178s
+sys	0m0.031s
+
+real	0m0.291s
+user	0m0.188s
+sys	0m0.032s
+
+real	0m0.325s
+user	0m0.199s
+sys	0m0.037s
+
+real	0m0.281s
+user	0m0.181s
+sys	0m0.033s
+
+size: 1048576 cipher: aes256 command: read
+real	0m0.282s
+user	0m0.205s
+sys	0m0.035s
+
+real	0m0.284s
+user	0m0.207s
+sys	0m0.033s
+
+real	0m0.283s
+user	0m0.206s
+sys	0m0.035s
+
+real	0m0.283s
+user	0m0.205s
+sys	0m0.035s
+
+real	0m0.286s
+user	0m0.208s
+sys	0m0.035s
+
+real	0m0.286s
+user	0m0.207s
+sys	0m0.034s
+
+real	0m0.287s
+user	0m0.206s
+sys	0m0.033s
+
+real	0m0.282s
+user	0m0.204s
+sys	0m0.034s
+
+real	0m0.280s
+user	0m0.204s
+sys	0m0.034s
+
+real	0m0.283s
+user	0m0.204s
+sys	0m0.034s
+
+size: 1073741824 cipher: null command: write
+real	0m5.149s
+user	0m2.417s
+sys	0m1.966s
+
+real	0m5.122s
+user	0m2.302s
+sys	0m1.895s
+
+real	0m5.320s
+user	0m2.320s
+sys	0m1.771s
+
+real	0m9.309s
+user	0m2.359s
+sys	0m1.848s
+
+real	0m12.395s
+user	0m2.333s
+sys	0m1.874s
+
+real	0m25.464s
+user	0m2.283s
+sys	0m1.830s
+
+real	0m31.943s
+user	0m2.315s
+sys	0m1.905s
+
+real	0m34.694s
+user	0m2.383s
+sys	0m1.906s
+
+real	0m37.943s
+user	0m2.319s
+sys	0m1.872s
+
+real	0m38.351s
+user	0m2.270s
+sys	0m1.756s
+
+size: 1073741824 cipher: null command: read
+real	0m5.614s
+user	0m7.685s
+sys	0m1.727s
+
+real	0m5.618s
+user	0m7.758s
+sys	0m1.751s
+
+real	0m5.621s
+user	0m7.698s
+sys	0m1.743s
+
+real	0m5.681s
+user	0m7.619s
+sys	0m1.694s
+
+real	0m6.498s
+user	0m7.821s
+sys	0m1.827s
+
+real	0m5.830s
+user	0m7.852s
+sys	0m1.812s
+
+real	0m5.537s
+user	0m7.701s
+sys	0m1.591s
+
+real	0m5.549s
+user	0m7.624s
+sys	0m1.617s
+
+real	0m5.554s
+user	0m7.550s
+sys	0m1.581s
+
+real	0m5.543s
+user	0m7.720s
+sys	0m1.602s
+
+size: 1073741824 cipher: aes128 command: write
+real	0m52.092s
+user	0m45.146s
+sys	0m6.464s
+
+real	0m51.158s
+user	0m41.614s
+sys	0m2.637s
+
+real	0m57.488s
+user	0m45.143s
+sys	0m4.203s
+
+real	0m53.595s
+user	0m43.359s
+sys	0m2.706s
+
+real	0m55.060s
+user	0m42.651s
+sys	0m2.781s
+
+real	0m57.625s
+user	0m46.001s
+sys	0m4.936s
+
+real	0m53.833s
+user	0m42.382s
+sys	0m2.650s
+
+real	0m55.307s
+user	0m42.811s
+sys	0m2.891s
+
+real	0m54.027s
+user	0m40.306s
+sys	0m2.222s
+
+real	0m53.757s
+user	0m41.773s
+sys	0m3.032s
+
+size: 1073741824 cipher: aes128 command: read
+real	0m55.983s
+user	0m53.820s
+sys	0m3.656s
+
+real	0m52.034s
+user	0m52.519s
+sys	0m3.552s
+
+real	0m54.727s
+user	0m53.787s
+sys	0m3.733s
+
+real	0m59.768s
+user	0m55.456s
+sys	0m3.855s
+
+real	1m4.362s
+user	0m55.392s
+sys	0m3.469s
+
+real	0m58.234s
+user	0m54.888s
+sys	0m3.748s
+
+real	1m6.275s
+user	0m57.922s
+sys	0m3.886s
+
+real	0m46.834s
+user	0m48.176s
+sys	0m3.180s
+
+real	0m52.592s
+user	0m52.477s
+sys	0m3.390s
+
+real	0m49.896s
+user	0m50.640s
+sys	0m3.265s
+
+size: 1073741824 cipher: aes256 command: write
+real	0m57.030s
+user	0m49.000s
+sys	0m6.829s
+
+real	0m55.247s
+user	0m47.643s
+sys	0m6.817s
+
+real	0m56.200s
+user	0m48.293s
+sys	0m6.870s
+
+real	0m56.858s
+user	0m48.184s
+sys	0m6.937s
+
+real	0m58.432s
+user	0m47.070s
+sys	0m5.758s
+
+real	0m54.178s
+user	0m43.380s
+sys	0m3.727s
+
+real	0m56.150s
+user	0m47.214s
+sys	0m5.959s
+
+real	0m58.127s
+user	0m48.392s
+sys	0m6.774s
+
+real	0m58.779s
+user	0m47.886s
+sys	0m6.320s
+
+real	0m57.730s
+user	0m48.916s
+sys	0m6.634s
+
+size: 1073741824 cipher: aes256 command: read
+real	0m55.395s
+user	0m54.682s
+sys	0m3.768s
+
+real	0m55.770s
+user	0m54.383s
+sys	0m4.101s
+
+real	0m51.577s
+user	0m51.570s
+sys	0m3.409s
+
+real	0m55.442s
+user	0m53.988s
+sys	0m3.745s
+
+real	0m54.702s
+user	0m53.522s
+sys	0m3.660s
+
+real	0m53.698s
+user	0m52.628s
+sys	0m3.751s
+
+real	0m53.812s
+user	0m52.981s
+sys	0m3.603s
+
+real	0m52.826s
+user	0m53.186s
+sys	0m3.479s
+
+real	0m55.260s
+user	0m53.979s
+sys	0m3.781s
+
+real	0m55.527s
+user	0m54.131s
+sys	0m3.818s
+

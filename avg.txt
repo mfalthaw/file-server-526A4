@@ -1,0 +1,36 @@
+size: 1KB cipher: null command: write
+0.08189999999999999 seconds
+size: 1KB cipher: null command: read
+0.08259999999999999 seconds
+size: 1KB cipher: aes128 command: write
+0.21590000000000004 seconds
+size: 1KB cipher: aes128 command: read
+0.2178 seconds
+size: 1KB cipher: aes256 command: write
+0.21480000000000002 seconds
+size: 1KB cipher: aes256 command: read
+0.21850000000000006 seconds
+size: 1MB cipher: null command: write
+0.08559999999999998 seconds
+size: 1MB cipher: null command: read
+0.08899999999999998 seconds
+size: 1MB cipher: aes128 command: write
+0.2684 seconds
+size: 1MB cipher: aes128 command: read
+0.2757 seconds
+size: 1MB cipher: aes256 command: write
+0.28420000000000006 seconds
+size: 1MB cipher: aes256 command: read
+0.28359999999999996 seconds
+size: 1GB cipher: null command: write
+20.569 seconds
+size: 1GB cipher: null command: read
+5.7045 seconds
+size: 1GB cipher: aes128 command: write
+54.3942 seconds
+size: 1GB cipher: aes128 command: read
+58.0705 seconds
+size: 1GB cipher: aes256 command: write
+56.8731 seconds
+size: 1GB cipher: aes256 command: read
+54.4009 seconds

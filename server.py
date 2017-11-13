@@ -148,18 +148,18 @@ def main():
 
     Protocol.log('Listening on {}:{}'.format(str(HOST), str(args.port)))
     Protocol.log('Using secret key: {}'.format(args.key))
-    while True:
-        conn, addr = s.accept()
-        addr = str(addr)
-        Protocol.log('{}: New connection from: {}'.format(datetime.now().strftime('%H:%M:%S'), addr))
-        try:
-            handle_client(conn, args.key)
-        except BadKeyError:
-            Protocol.log('Invalid encryption key used, closing connection')
+    # while True:
+    conn, addr = s.accept()
+    addr = str(addr)
+    Protocol.log('{}: New connection from: {}'.format(datetime.now().strftime('%H:%M:%S'), addr))
+    try:
+        handle_client(conn, args.key)
+    except BadKeyError:
+        Protocol.log('Invalid encryption key used, closing connection')
 
-        # close connection
-        Protocol.log('closed connection!')
-        conn.close()
+    # close connection
+    Protocol.log('closed connection!')
+    conn.close()
 
 
 if __name__ == '__main__':
